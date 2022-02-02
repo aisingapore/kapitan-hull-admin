@@ -1,0 +1,26 @@
+secrets:
+  name: mlflow-nginx-server-secrets
+  username: mlops
+  password: a1s1n9apore
+  databaseUri: "sqlite:///polyaxon-v1-data/mlflow.db"
+service:
+  name: mlflow-nginx-server-svc
+  port: 5005
+  appName: mlflow-nginx-server
+deployment:
+  name: mlflow-nginx-server-deployment
+  image: ryzalk/mlflow-nginx-server:0.1.0
+  imageName: mlflow
+  resources:
+    memory: "2Gi"
+    cpu: "2"
+  limits:
+    memory: "4Gi"
+    cpu: "2"
+persistent:
+  mountPath: /polyaxon-v1-data
+  volumeName: mlflow-persistent-storage
+  volumeClaimName: fstore-rwx-pvc
+gcp:
+  credentialsName: gcp-imagepullsecrets
+

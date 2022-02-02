@@ -1,0 +1,12 @@
+dependencies:
+- name: aisg-pvc
+  repository: file://local-charts/aisg-pvc
+  version: 1.0.0
+- name: polyaxon
+  repository: https://charts.polyaxon.com
+  version: 1.14.3
+- name: mlflow-aisg
+  repository: file://local-charts/mlflow-aisg
+  version: 1.0.0
+digest: sha256:f14210db7d047a08a02d44cdb3f9d2224019eff4bd4659f01ec88eee7872c0e8
+generated: "2022-02-02T20:49:09.420669+08:00"

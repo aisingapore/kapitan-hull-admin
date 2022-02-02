@@ -1,0 +1,16 @@
+apiVersion: v2
+name: aisg-e2e-platform
+description: Deploys AISG's end-to-end platform, mainly Polyaxon and MLFlow.
+type: application
+version: 1.0.0
+dependencies:
+  - name: aisg-pvc
+    version: 1.0.0
+    repository: "file://local-charts/aisg-pvc"
+  - name: polyaxon
+    version: 1.14.3
+    repository: "https://charts.polyaxon.com"
+  - name: mlflow-aisg
+    version: 1.0.0
+    repository: "file://local-charts/mlflow-aisg"
+
