@@ -15,7 +15,7 @@ be in the same namespace (`polyaxon-v1` by default).
   `bash run.sh`. Ensure that the target Kubernetes cluster is your 
   current context.
 - Check that polyaxon runs 
-  (`polyaxon port-forward --port=8888 --namespace=polyaxon-v1 &`)
+  (`polyaxon port-forward -p 8888 -n polyaxon-v1 -r aisg-e2e-platform &`)
 
 ## Versions Used
 - Polyaxon 1.14.3
