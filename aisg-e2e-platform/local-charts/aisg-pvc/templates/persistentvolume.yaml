@@ -4,6 +4,8 @@ metadata:
   name: {{ .Values.pv.name }}
   labels:
     type: local
+  annotations:
+    "helm.sh/resource-policy": keep
 spec:
   storageClassName: {{ .Values.pv.name }}
   capacity:
