@@ -9,18 +9,31 @@ service:
   appName: mlflow-nginx-server
 deployment:
   name: mlflow-nginx-server-deployment
-  image: ryzalk/mlflow-nginx-server:0.1.0
   imageName: mlflow
+  image: ryzalk/mlflow-nginx-server:0.1.0
   resources:
     memory: "2Gi"
     cpu: "2"
   limits:
     memory: "4Gi"
     cpu: "2"
+backup:
+  name: mlflow-sqlitedb-backup-job
+  schedule: "30 03 * * 0,2,4,6"
+  timeoutSec: 60
+  imageName: google-cloud-sdk
+  image: google/cloud-sdk:slim
+  args:
+  - gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+  - gsutil cp /polyaxon-v1-data/mlflow.db gs://mlflow-artifacts/mlflow-db-files/$(date +"%d%m%y_%H%M%S")_utc_mlflow.db
 persistent:
-  mountPath: /polyaxon-v1-data
   volumeName: mlflow-persistent-storage
+  mountPath: /polyaxon-v1-data
   volumeClaimName: fstore-rwx-pvc
 gcp:
   credentialsName: gcp-imagepullsecrets
-
+  serviceAccount:
+    name: gcp-service-account
+    secretName: gcp-sa-credentials
+    mountPath: /var/secret/cloud.google.com
+    yamlName: gcp-service-account.json
