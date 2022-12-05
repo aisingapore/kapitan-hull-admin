@@ -23,9 +23,12 @@ backup:
   timeoutSec: 60
   imageName: google-cloud-sdk
   image: google/cloud-sdk:slim
+  path: mlflow-tracking-server/db-backups
   args:
-  - gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
-  - gsutil cp /polyaxon-v1-data/mlflow.db gs://mlflow-artifacts/mlflow-db-files/$(date +"%d%m%y_%H%M%S")_utc_mlflow.db
+  - gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS;
+    export GCP_PROJECT_ID=$(gcloud config list --format 'value(core.project)');
+    gsutil ls -b gs://$GCP_PROJECT_ID-artefacts/$MLFLOW_BACKUP_PATH || gsutil mb -p $GCP_PROJECT_ID -l ASIA-SOUTHEAST1 gs://$GCP_PROJECT_ID-artefacts;
+    gsutil cp /polyaxon-v1-data/mlflow.db gs://GCP_PROJECT_ID-artefacts/$MLFLOW_BACKUP_PATH/$(date +"%d%m%y_%H%M%S")_utc_mlflow.db
 persistent:
   volumeName: mlflow-persistent-storage
   mountPath: /polyaxon-v1-data

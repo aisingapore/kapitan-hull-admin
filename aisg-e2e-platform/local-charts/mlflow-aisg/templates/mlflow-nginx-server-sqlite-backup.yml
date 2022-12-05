@@ -13,7 +13,7 @@ spec:
           - name: {{ .Values.backup.imageName }}
             image: {{ .Values.backup.image }}
             imagePullPolicy: Always
-            command: ["/bin/bash","-c"]
+            command: [ "/bin/bash", "-c" ]
             args:
             {{- range .Values.backup.args }}
             - {{ . }}
@@ -27,6 +27,8 @@ spec:
             env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: {{ .Values.gcp.serviceAccount.mountPath }}/{{ .Values.gcp.serviceAccount.yamlName }}
+            - name: MLFLOW_BACKUP_PATH
+              value: {{ .Values.backup.path }}
           restartPolicy: OnFailure
           imagePullSecrets:
           - name: {{ .Values.gcp.credentialsName }}
