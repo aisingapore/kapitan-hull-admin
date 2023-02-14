@@ -28,6 +28,9 @@ spec:
           volumeMounts:
             - name: {{ .Values.persistent.volumeName }}
               mountPath: {{ .Values.persistent.mountPath }}
+            - name: {{ .Values.gcp.serviceAccount.name }}
+              mountPath: {{ .Values.gcp.serviceAccount.mountPath }}
+              readOnly: true
           env:
             - name: MLFLOW_TRACKING_USERNAME
               valueFrom:
@@ -44,10 +47,14 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secrets.name }}
                   key: databaseUri
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: {{ .Values.gcp.serviceAccount.mountPath }}/{{ .Values.gcp.serviceAccount.yamlName }}
       imagePullSecrets:
         - name: {{ .Values.gcp.credentialsName }}
       volumes:
         - name: {{ .Values.persistent.volumeName }}
           persistentVolumeClaim:
             claimName: {{ .Values.persistent.volumeClaimName }}
-
+        - name: {{ .Values.gcp.serviceAccount.name }}
+          secret:
+            secretName: {{ .Values.gcp.serviceAccount.secretName }}
