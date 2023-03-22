@@ -1,0 +1,7 @@
+persistent:
+  mountPath: /models
+  volumeClaimName: ishinora-pvc
+secrets:
+  databaseUri: sqlite:///models/mlflow.db
+  password: E61zCGdt8c683JbC
+  username: ishinora
