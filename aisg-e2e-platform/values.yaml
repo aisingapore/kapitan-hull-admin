@@ -36,6 +36,8 @@ polyaxon:
     group: 2222
   intervals:
     compatibilityCheck: -1
+  ui:
+    offline: true
 mlflow-aisg:
   secrets:
     name: mlflow-nginx-server-secrets
