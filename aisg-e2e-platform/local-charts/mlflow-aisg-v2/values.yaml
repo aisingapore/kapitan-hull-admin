@@ -1,0 +1,98 @@
+auth:
+  # -- Default admin username.
+  username: admin
+  # -- Default admin password.
+  password: password
+  # -- Name of Secret to store the default admin credentials.
+  secretName: mlflow-admin-credentials
+config:
+  # -- Enable/Disable authentication for MLflow server.
+  auth: true
+  # -- Enable/Disable backup jobs for database file.
+  backupJob: true
+  # -- Define which backend to use to store MLflow artefact, [ecs, gcs].
+  artefactBackend: ecs 
+  # -- Name of bucket that the artifacts and tracking server will write to.
+  bucketName: 100e-proj
+gcp:
+  # -- Name of the Secret that contains the imagePullSecret for MLflow.
+  credentialsName: gcp-imagepullsecrets
+  # -- GCP project ID.
+  projectId: 100e-proj-aut0
+  serviceAccount:
+    # -- Service account reference name.
+    volumneName: gcp-service-account
+    # -- Name of secret that contains the Service Account key.
+    secretName: gcp-sa-credentials
+    # -- Location to mount the Service Account key to.
+    mountPath: /var/secret/cloud.google.com
+    # -- Name of the Service Account json file.
+    jsonName: gcs-sa.json
+ecs:
+  # -- Name of Secret that contains credentials to Harbor registry.
+  harborCredentialsName: harbor-credentials
+  # -- Name of Secret that contains credentials to ECS.
+  s3CredentialsName: s3-credentials
+  # -- Endpoint for ECS.
+  endpointURL: "https://necs.nus.edu.sg"
+deployment:
+  # -- Name of the mlflow-server deployment.
+  deploymentName: mlflow-deployment
+  # -- Name of the port that is to be exposed.
+  portName: mlflow
+  # -- Container name that runs the mlflow-server.
+  containerName: mlflow
+  # -- Image to pull mlflow-server from.
+  image: registry.aisingapore.net/mlops-pub/mlflow-server:2.5.0
+  # -- Arguments to pass to the image.
+  args:
+    - "-w 2"
+    - "-p 5005"
+  # -- Requested CPU and RAM to run the mlflow-server on.
+  resources:
+    memory: "1Gi"
+    cpu: "0.5"
+  # -- Maximum CPU and RAM that the mlflow-servers will be provisioned with.
+  limits:
+    memory: "2Gi"
+    cpu: "0.5"
+persistent:
+  # -- Reference name for volume.
+  volumeName: mlflow-persistent-storage
+  # -- Path to mount the Persistent Volume Storage to; use absolute path to specify mount location.
+  mountPath: /workspace
+  # -- Name of the PersistentVolumeClaim that will be used to mount a volume to the MLflow server.
+  volumeClaimName: mlflow-pvc
+service:
+  # -- Name of the Service that points to the MLflow server Pods.
+  serviceName: mlflow-server-svc
+  # -- Port at which the mlflow-server is exposed on.
+  port: 5005
+  # -- Reference labels that will be applied to both Deployment and Service to expose the correct Deployment
+  appName: mlflow-server
+backup:
+  # -- Name of the backup cronjob.
+  cronjobName: mlflow-sqlitedb-backup
+  # -- Cron schedule for the backup job.
+  schedule: "*/5 * * * 0,2,4,6"
+  # -- TTL (in seconds) for the jobs spun up by the cronjob schedule. 
+  timeoutSec: 60
+  # -- Path to save the mlflow tracking server backups to.
+  path: db-backups
+  # -- Name of the container of the backup job.
+  containerName: backup-job
+  gcs:
+    # -- Image to run the backup job on, for when the tracking server is stored on GCS.
+    image: google/cloud-sdk:437.0.1-slim
+    # -- Arguments for the backup job image for a GCS backend.
+    args:
+    - gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS;
+      gsutil ls -b gs://$GCS_BUCKET/$MLFLOW_BACKUP_PATH &> /dev/null || gsutil mb -p $GCP_PROJECT_ID -l ASIA-SOUTHEAST1 gs://$GCS_BUCKET;
+      gsutil cp $MLFLOW_DATABASE_PATH gs://$GCS_BUCKET/$MLFLOW_BACKUP_PATH/$(TZ='Asia/Singapore' date +"%d%m%y_%H%M%S")_mlflow.db
+  ecs:
+    # -- Image to run the backup job on, for when the tracking server is stored on ECS.
+    image: amazon/aws-cli:2.13.3
+    # -- Arguments for the backup job image for a ECS backend.
+    args:
+    - aws s3 cp $MLFLOW_DATABASE_PATH s3://$S3_BUCKET/$MLFLOW_BACKUP_PATH/$(TZ='Asia/Singapore' date +"%d%m%y_%H%M%S")_mlflow.db
+
