@@ -39,7 +39,8 @@ fi
 
 if [[ -z "$DATABASE_URL" ]]; then
 	export DATABASE_URL='sqlite:///mlflow.db'
+else
+	mkdir -p $(echo $DATABASE_URL | sed -n 's+.*sqlite:///\(.*\)/mlflow\.db+\1+p')
 fi
-
 exec mlflow server --artifacts-destination=$ARTIFACT_URL \
 	--backend-store-uri=$DATABASE_URL --host 0.0.0.0 "$@"
