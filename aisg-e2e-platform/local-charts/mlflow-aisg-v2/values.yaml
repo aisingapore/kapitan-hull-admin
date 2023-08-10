@@ -33,6 +33,10 @@ ecs:
   harborCredentialsName: harbor-credentials
   # -- Name of Secret that contains credentials to ECS.
   s3CredentialsName: s3-credentials
+  # -- Name of the key within the Secret that contains the access key ID.
+  accessKeyId: accessKeyId
+  # -- Name of the key within the Secret that contains the secret access key.
+  secretAccessKey: secretAccessKey
   # -- Endpoint for ECS.
   endpointURL: "https://necs.nus.edu.sg"
 deployment:

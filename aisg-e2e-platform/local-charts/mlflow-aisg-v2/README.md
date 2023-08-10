@@ -34,6 +34,8 @@ Deploys MLFlow server with authentication in AISG-managed clusters. Backup cronj
 | ecs.endpointURL | string | `https://necs.nus.edu.sg` | Endpoint for ECS. |
 | ecs.harborCredentialsName | string | `harbor-credentials` | Name of Secret that contains credentials to Harbor registry. |
 | ecs.s3CredentialsName | string | `s3-credentials` | Name of Secret that contains credentials to ECS. |
+| ecs.accessKeyId | string | `accessKeyId` | Name of the key within the Secret that contains the access key ID. |
+| ecs.secretAccessKey | string | `secretAccessKey` | Name of the key within the Secret that contains the secret access key. |
 | gcp.credentialsName | string | `gcp-imagepullsecrets` | Name of the Secret that contains the imagePullSecret for MLflow. |
 | gcp.projectId | string | `100e-proj-aut0` | GCP project ID. |
 | gcp.serviceAccount.jsonName | string | `gcs-sa.json` | Name of the Service Account json file. |

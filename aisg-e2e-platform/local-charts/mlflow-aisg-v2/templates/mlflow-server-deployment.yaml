@@ -78,13 +78,13 @@ spec:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
-                  key: accessKeyId
+                  key: {{ .Values.ecs.accessKeyId }}
                   name: {{ .Values.ecs.s3CredentialsName }}
                   optional: False
             - name: AWS_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
-                  key: secretAccessKey
+                  key: {{ .Values.ecs.secretAccessKey }}
                   name: {{ .Values.ecs.s3CredentialsName }}
                   optional: False
             {{- else if eq .Values.config.artefactBackend "gcs" }}
