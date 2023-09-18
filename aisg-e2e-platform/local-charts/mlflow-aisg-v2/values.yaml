@@ -21,7 +21,7 @@ gcp:
   projectId: 100e-proj-aut0
   serviceAccount:
     # -- Service account reference name.
-    volumneName: gcp-service-account
+    volumeName: gcp-service-account
     # -- Name of secret that contains the Service Account key.
     secretName: gcp-sa-credentials
     # -- Location to mount the Service Account key to.

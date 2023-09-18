@@ -33,7 +33,7 @@ spec:
             - name: {{ .Values.persistent.volumeName }}
               mountPath: {{ .Values.persistent.mountPath }}
             {{- if eq .Values.config.artefactBackend "gcs" }}
-            - name: {{ .Values.gcp.serviceAccount.name }}
+            - name: {{ .Values.gcp.serviceAccount.volumeName }}
               mountPath: {{ .Values.gcp.serviceAccount.mountPath }}
               readOnly: true
             {{- end }}
@@ -76,7 +76,7 @@ spec:
           {{- end }}
           volumes:
           {{- if eq .Values.config.artefactBackend "gcs" }}
-          - name: {{ .Values.gcp.serviceAccount.name }}
+          - name: {{ .Values.gcp.serviceAccount.volumeName }}
             secret:
               secretName: {{ .Values.gcp.serviceAccount.secretName }}
           {{- end }}
