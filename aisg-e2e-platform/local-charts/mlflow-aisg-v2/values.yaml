@@ -27,7 +27,7 @@ gcp:
     # -- Location to mount the Service Account key to.
     mountPath: /var/secret/cloud.google.com
     # -- Name of the Service Account json file.
-    jsonName: gcs-sa.json
+    jsonName: gcp-service-account.json
 ecs:
   # -- Name of Secret that contains credentials to Harbor registry.
   harborCredentialsName: harbor-credentials
@@ -54,12 +54,11 @@ deployment:
     - "-p 5005"
   # -- Requested CPU and RAM to run the mlflow-server on.
   resources:
-    memory: "1Gi"
+    memory: "2Gi"
     cpu: "0.5"
   # -- Maximum CPU and RAM that the mlflow-servers will be provisioned with.
   limits:
     memory: "2Gi"
-    cpu: "0.5"
 persistent:
   # -- Reference name for volume.
   volumeName: mlflow-persistent-storage
