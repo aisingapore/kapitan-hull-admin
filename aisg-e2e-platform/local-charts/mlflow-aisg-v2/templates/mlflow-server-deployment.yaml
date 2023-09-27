@@ -16,15 +16,27 @@ spec:
           imagePullPolicy: Always
           name: {{ .Values.deployment.containerName }}
           {{- if .Values.deployment.args }}
-          args: 
+          args:
             {{- range .Values.deployment.args }}
             - {{ . }}
             {{- end }}
-            {{- if .Values.config.auth }}
-            - --app-name
-            - basic-auth
-            {{- end }}
           {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           resources:
             requests:
               memory: {{ .Values.deployment.resources.memory }}
@@ -33,7 +45,7 @@ spec:
               memory: {{ .Values.deployment.limits.memory }}
               cpu: {{ .Values.deployment.limits.cpu }}
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - containerPort: {{ .Values.service.targetPort }}
               name: {{ .Values.deployment.portName }}
           volumeMounts:
             - name: {{ .Values.persistent.volumeName }}
@@ -45,27 +57,27 @@ spec:
             {{- end }}
           env:
             - name: DATABASE_URL
-            {{- if .Values.config.databaseURL }}
-              value: {{ .Values.config.databaseURL }}
+            {{- if .Values.config.database.enableCustom }}
+              value: {{ .Values.config.database.customTrackingDBURL }}
             {{- else }}
               value: {{ printf "sqlite:///%s/mlflow/mlflow.db" .Values.persistent.mountPath }}
             {{- end }}
-            {{- if .Values.config.auth }}
+            {{- if .Values.config.authSecretName }}
             - name: AUTH_DATABASE_URL
-            {{- if .Values.config.authDatabaseURL }}
-              value: {{ .Values.config.authDatabaseURL }}
+            {{- if .Values.config.database.enableCustom }}
+              value: {{ .Values.config.database.customAuthDBURL }}
             {{- else }}
               value: {{ printf "sqlite:///%s/mlflow/basic-auth.db" .Values.persistent.mountPath }}
             {{- end }}
             - name: AUTH_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.auth.secretName }}
+                  name: {{ .Values.config.authSecretName }}
                   key: username
             - name: AUTH_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.auth.secretName }}
+                  name: {{ .Values.config.authSecretName }}
                   key: password
             {{- end }}
             - name: ARTIFACT_BACKEND
@@ -108,15 +120,7 @@ spec:
           secret:
             secretName: {{ .Values.gcp.serviceAccount.secretName }}
         {{- end }}
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Values.service.serviceName }}
-spec:
-  ports:
-  - port: {{ .Values.service.port }}
-  selector:
-    app: {{ .Values.service.appName }}
-
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
