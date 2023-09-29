@@ -1,0 +1,52 @@
+variables:
+  MLFLOW_REPO_PATH: mlflow
+  GCP_LOCATION: asia-southeast1-docker.pkg.dev
+  GCP_REPO: machine-learning-ops/mlflow-server
+
+
+stages:
+  - verify
+  - build
+
+verify-image-gcp:
+  stage: verify
+  image: docker:24.0.6-dind-alpine3.18
+  rules:
+    - if: $PLATFORM == "gcp"
+  script:
+    - docker pull "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}"
+    - if [[ $? == 0 ]]; then echo "Image - ${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG} found; skip build"; exit 1; fi
+
+generate-access-token-gcp:
+  stage: build
+  image: google/cloud-sdk:slim
+  needs:
+    - job: verify-image-gcp
+  script:
+    - gcp_token=$(gcloud auth print-access-token \
+      --impersonate-service-account ${GCP_SERVICE_ACCT})
+    - echo "GCP_TOKEN=${gcp_token}" >> gcp_token.env
+  artifacts:
+    reports:
+      dotenv: gcp_token.env
+    expire_in: 1hr
+
+build-gcp:
+  stage: build
+  image: gcr.io/kaniko-project/executor:debug
+  tags:
+    - gcp
+  needs:
+    - job: generate-access-token-gcp
+      artifacts: true
+  before_script:
+    - echo ${GCP_TOKEN} | docker login -u oauth2accesstoken --password-stdin \
+      https://${GCP_LOCATION}
+  script:
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}/mlflow"
+      --destination "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}"
+      --file mlflow-server.Dockerfile
+      --build-arg "MLFLOW_VER=${IMAGE_TAG}"
+
