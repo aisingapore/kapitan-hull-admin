@@ -37,7 +37,7 @@ generate-access-token-gcp:
 
 build-gcp:
   stage: build
-  image: gcr.io/kaniko-project/executor:debug
+  image: docker:24.0.6-dind-alpine3.18
   tags:
     - gcp
   needs:
@@ -47,10 +47,8 @@ build-gcp:
     - echo ${GCP_TOKEN} | docker login -u oauth2accesstoken --password-stdin \
       https://${GCP_LOCATION}
   script:
-    - >-
-      /kaniko/executor
-      --context "${CI_PROJECT_DIR}/mlflow"
-      --destination "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}"
-      --file mlflow-server.Dockerfile
-      --build-arg "MLFLOW_VER=${IMAGE_TAG}"
+    - docker build -t "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}" \
+      -f mlflow-server.Dockerfile
+      --build-arg "MLFLOW_VER=${IMAGE_TAG}" "${CI_PROJECT_DIR}/mlflow"
+    - docker push "${GCP_LOCATION/${GCP_REPO}/mlflow:${IMAGE_TAG}"
 
