@@ -24,9 +24,11 @@ generate-access-token-gcp:
     - gcp
   needs:
     - job: verify-image-gcp
+  before_script:
+    - cat $GCP_SA_KEY >> gcp_sa.json
   script:
-    - gcp_token=$(gcloud auth print-access-token \
-      --impersonate-service-account ${GCP_SERVICE_ACCT})
+    - gcloud auth login --cred-file gcp_sa.json
+    - gcp_token=$(gcloud auth print-access-token)
     - echo "GCP_TOKEN=${gcp_token}" >> gcp_token.env
   artifacts:
     reports:
