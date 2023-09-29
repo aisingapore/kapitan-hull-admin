@@ -10,6 +10,8 @@ stages:
 
 verify-image-gcp:
   stage: verify
+  tags:
+    - dind
   image: docker:24.0.6-dind-alpine3.18
   rules:
     - if: $PLATFORM == "gcp"
