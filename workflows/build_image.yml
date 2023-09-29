@@ -44,11 +44,13 @@ build-gcp:
     - job: generate-access-token-gcp
       artifacts: true
   before_script:
-    - echo ${GCP_TOKEN} | docker login -u oauth2accesstoken --password-stdin \
-      https://${GCP_LOCATION}
+    - echo ${GCP_TOKEN} | docker login -u oauth2accesstoken --password-stdin
+      "https://${GCP_LOCATION}"
   script:
-    - docker build -t "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}" \
+    - docker build 
+      -t "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}" 
       -f mlflow-server.Dockerfile
-      --build-arg "MLFLOW_VER=${IMAGE_TAG}" "${CI_PROJECT_DIR}/mlflow"
+      --build-arg "MLFLOW_VER=${IMAGE_TAG}"
+      "${CI_PROJECT_DIR}/mlflow"
     - docker push "${GCP_LOCATION/${GCP_REPO}/mlflow:${IMAGE_TAG}"
 
