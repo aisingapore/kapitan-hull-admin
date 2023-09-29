@@ -1,7 +1,7 @@
 variables:
   MLFLOW_REPO_PATH: mlflow
   GCP_LOCATION: asia-southeast1-docker.pkg.dev
-  GCP_REPO: machine-learning-ops/mlflow-server
+  GCP_REPO: machine-learning-ops/mlflow-server/v2
 
 
 stages:
@@ -14,8 +14,8 @@ verify-image-gcp:
   rules:
     - if: $PLATFORM == "gcp"
   script:
-    - docker pull "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}"
-    - if [[ $? == 0 ]]; then echo "Image - ${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG} found; skip build"; exit 1; fi
+    - (docker pull "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}" && exit_code=0) || exit_code=$?
+    - if [[ $exit_code == 0 ]]; then echo "Image - ${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG} found; skip build"; exit 1; fi
 
 generate-access-token-gcp:
   stage: build
