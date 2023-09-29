@@ -53,5 +53,5 @@ build-gcp:
       -t "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}" 
       -f mlflow-server.Dockerfile
       --build-arg "MLFLOW_VER=${IMAGE_TAG}" .
-    - docker push "${GCP_LOCATION/${GCP_REPO}/mlflow:${IMAGE_TAG}"
+    - docker push "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}"
 
