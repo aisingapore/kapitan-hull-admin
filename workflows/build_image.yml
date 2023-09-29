@@ -16,7 +16,7 @@ verify-image-gcp:
   rules:
     - if: $PLATFORM == "gcp"
   script:
-    - (docker pull "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}" && exit_code=0) || exit_code=$?
+    - exit_code=$(docker pull "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}" && echo $?)
     - if [[ $exit_code == 0 ]]; then echo "Image - ${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG} found; skip build"; exit 1; fi
 
 generate-access-token-gcp:
