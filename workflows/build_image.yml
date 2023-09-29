@@ -20,6 +20,8 @@ verify-image-gcp:
 generate-access-token-gcp:
   stage: build
   image: google/cloud-sdk:slim
+  tags:
+    - gcp
   needs:
     - job: verify-image-gcp
   script:
