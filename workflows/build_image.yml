@@ -48,13 +48,10 @@ build-gcp:
     - echo ${GCP_TOKEN} | docker login -u oauth2accesstoken --password-stdin
       "https://${GCP_LOCATION}"
   script:
-    - echo "${CI_PROJECT_DIR}"
-    - echo "$PWD"
-    - ls "${CI_PROJECT_DIR}"
+    - cd "${CI_PROJECT_DIR}/mlflow"
     - docker build 
       -t "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}" 
       -f mlflow-server.Dockerfile
-      --build-arg "MLFLOW_VER=${IMAGE_TAG}"
-      "mlflow/"
+      --build-arg "MLFLOW_VER=${IMAGE_TAG}" .
     - docker push "${GCP_LOCATION/${GCP_REPO}/mlflow:${IMAGE_TAG}"
 
