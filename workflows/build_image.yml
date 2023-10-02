@@ -88,7 +88,9 @@ build-gcp:
 
 build-harbor:
   stage: build
-  image: gcr.io/kaniko-project/executor:v1.15.0-debug
+  image: 
+    name: gcr.io/kaniko-project/executor:v1.15.0-debug
+    entrypoint: [""]
   tags:
     - dind
     - on-prem
