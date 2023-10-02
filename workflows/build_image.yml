@@ -78,7 +78,7 @@ build-gcp:
       artifacts: true
   before_script:
     - mkdir -p /kaniko/.docker
-    - echo -n '{"auths": "GCP_REGISTRY": {"auth": "PLACEHOLDER_TOKEN"}}}'
+    - echo -n '\{"auths": \{"GCP_REGISTRY": \{"auth": "PLACEHOLDER_TOKEN"\}\}\}'
     - export GCP_ENCRYPTED_TOKEN=$(echo -n "oauth2accesstoken:${GCP_TOKEN}" | sed 's/ //g')
     - sed -i "s/GCP_REGISTRY/${GCP_LOCATION}//" /kaniko/.docker/config.json
     - sed -i "s/PLACEHOLDER_TOKEN/${GCP_ENCRYPTED_TOKEN}//" /kaniko/.docker/config.json
