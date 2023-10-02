@@ -88,7 +88,7 @@ build-gcp:
 
 build-harbor:
   stage: build
-  image: "${DIND_IMAGE}"
+  image: gcr.io/kaniko-project/executor:v1.15.0-debug
   tags:
     - dind
     - on-prem
@@ -97,12 +97,12 @@ build-harbor:
   needs:
     - job: verify-image-harbor
   before_script:
-    - echo "${HARBOR_PASSWORD}" | docker login "https://${HARBOR_URI}" -u "${HARBOR_USERNAME}" --password-stdin
+    - harbor_creds=$(echo -n "${HARBOR_USERNAME}:${HARBOR_PASSWORD}" | base64)
+    - echo "{\"auths\":{\"https://${HARBOR_URI}\":{\"auth\":\"$harbor_creds\"}}}" >> /.docker/config.json
   script:
-    - cd "${CI_PROJECT_DIR}/mlflow"
-    - docker build
-      -t "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}"
+    - executor
+      --context "${CI_PROJECT_DIR}/mlflow"
+      -d "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}"
       -f mlflow-server.Dockerfile
-      --build-arg "MLFLOW_VER=${IMAGE_TAG}" .
-    - docker push "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}"
+      --build-arg "MLFLOW_VER=${IMAGE_TAG}" 
 
