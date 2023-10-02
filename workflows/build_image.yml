@@ -1,5 +1,6 @@
 variables:
   DIND_IMAGE: docker:24.0.6-dind-alpine3.18
+  KANIKO_IMAGE: gcr.io/kaniko-project/executor:v1.15.0-debug
   MLFLOW_REPO_PATH: mlflow
   GCP_LOCATION: asia-southeast1-docker.pkg.dev
   GCP_REPO: machine-learning-ops/mlflow-server/v2/mlflow
@@ -66,7 +67,7 @@ generate-access-token-gcp:
 
 build-gcp:
   stage: build
-  image: "${DIND_IMAGE}"
+  image: "${KANIKO_IMAGE}"
   tags:
     - gcp
     - dind
@@ -76,20 +77,22 @@ build-gcp:
     - job: generate-access-token-gcp
       artifacts: true
   before_script:
-    - echo ${GCP_TOKEN} | docker login -u oauth2accesstoken --password-stdin
-      "https://${GCP_LOCATION}"
+    - mkdir -p /kaniko/.docker
+    - echo -n '{"auths": "GCP_REGISTRY": {"auth": "PLACEHOLDER_TOKEN"}}}'
+    - export GCP_ENCRYPTED_TOKEN=$(echo -n "oauth2accesstoken:${GCP_TOKEN}" | sed 's/ //g')
+    - sed -i "s/GCP_REGISTRY/${GCP_LOCATION}//" /kaniko/.docker/config.json
+    - sed -i "s/PLACEHOLDER_TOKEN/${GCP_ENCRYPTED_TOKEN}//" /kaniko/.docker/config.json
   script:
-    - cd "${CI_PROJECT_DIR}/mlflow"
-    - docker build 
-      -t "${GCP_LOCATION}/${GCP_REPO}:${IMAGE_TAG}" 
-      -f mlflow-server.Dockerfile
-      --build-arg "MLFLOW_VER=${IMAGE_TAG}" .
-    - docker push "${GCP_LOCATION}/${GCP_REPO}:${IMAGE_TAG}"
+    - executor
+      --context "${CI_PROJECT_DIR}/mlflow"
+      --destination "${GCP_LOCATION}/${GCP_REPO}:${IMAGE_TAG}" 
+      --dockerfile mlflow-server.Dockerfile
+      --build-arg "MLFLOW_VER=${IMAGE_TAG}" 
 
 build-harbor:
   stage: build
   image: 
-    name: gcr.io/kaniko-project/executor:v1.15.0-debug
+    name: "${KANIKO_IMAGE}"
     entrypoint: [""]
   tags:
     - dind
