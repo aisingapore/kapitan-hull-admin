@@ -19,7 +19,7 @@ verify-image-gcp:
   rules:
     - if: $PLATFORM == "gcp"
   script:
-    - exit_code=$(docker pull "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}" &> /dev/null && echo $?)
+    - exit_code=$(docker manifest inspect "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}" &> /dev/null; echo $?)
     - >-
       if [[ $exit_code == 0 ]];
         then echo "Image - ${GCP_LOCATION}/${GCP_REPO}:${IMAGE_TAG} found; skipping job.";
@@ -37,8 +37,7 @@ verify-image-harbor:
   before_script:
     - echo "${HARBOR_PASSWORD}" | docker login "https://${HARBOR_URI}" -u "${HARBOR_USERNAME}" --password-stdin
   script:
-    - docker pull "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}"
-    - exit_code=$(docker pull "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}" &> /dev/null && echo $?)
+    - exit_code=$(docker manifest inspect "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}" &> /dev/null; echo $?)
     - |+
       if [[ $exit_code == 0 ]]
         then echo "Image - ${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG} found; skipping job."
