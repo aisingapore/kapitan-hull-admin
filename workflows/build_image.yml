@@ -1,7 +1,10 @@
 variables:
+  DIND_IMAGE: docker:24.0.6-dind-alpine3.18
   MLFLOW_REPO_PATH: mlflow
   GCP_LOCATION: asia-southeast1-docker.pkg.dev
-  GCP_REPO: machine-learning-ops/mlflow-server/v2
+  GCP_REPO: machine-learning-ops/mlflow-server/v2/mlflow
+  HARBOR_URI: registry.aisingapore.net
+  HARBOR_REPO: mlops-pub/mlflow-server
 
 
 stages:
@@ -12,12 +15,34 @@ verify-image-gcp:
   stage: verify
   tags:
     - dind
-  image: docker:24.0.6-dind-alpine3.18
+  image: "${DIND_IMAGE}"
   rules:
     - if: $PLATFORM == "gcp"
   script:
     - exit_code=$(docker pull "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}" &> /dev/null && echo $?)
-    - if [[ $exit_code == 0 ]]; then echo "Image - ${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG} found; skip build"; exit 1; fi
+    - >
+      if [[ $exit_code == 0 ]]
+        then echo "Image - ${GCP_LOCATION}/${GCP_REPO}:${IMAGE_TAG} found; skipping job."
+        exit 1
+      fi
+
+verify-image-harbor:
+  stage: verify
+  tags:
+    - dind
+    - onprem
+  image: "${DIND_IMAGE}"
+  rules:
+    - if: $PLATFORM == "onprem"
+  before_script:
+    - echo "${HARBOR_PASSWORD}" | docker login "https://{HARBOR_URI}" -u "${HARBOR_USERNAME}" --password-stdin
+  script:
+    - exit_code=$(docker pull "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}" &> /dev/null && echo $?)
+    - >
+      if [[ $exit_code == 0 ]]
+        then echo "Image - ${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG} found; skipping job."
+        exit 1
+      fi
 
 generate-access-token-gcp:
   stage: build
@@ -39,7 +64,7 @@ generate-access-token-gcp:
 
 build-gcp:
   stage: build
-  image: docker:24.0.6-dind-alpine3.18
+  image: "${DIND_IMAGE}"
   tags:
     - gcp
     - dind
@@ -52,8 +77,26 @@ build-gcp:
   script:
     - cd "${CI_PROJECT_DIR}/mlflow"
     - docker build 
-      -t "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}" 
+      -t "${GCP_LOCATION}/${GCP_REPO}:${IMAGE_TAG}" 
       -f mlflow-server.Dockerfile
       --build-arg "MLFLOW_VER=${IMAGE_TAG}" .
-    - docker push "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}"
+    - docker push "${GCP_LOCATION}/${GCP_REPO}:${IMAGE_TAG}"
+
+build-harbor:
+  stage: build
+  image: "${DIND_IMAGE}"
+  tags:
+    - dind
+    - onprem
+  needs:
+    - job: verify-image-harbor
+  before_script:
+    - echo "${HARBOR_PASSWORD}" | docker login "https://{HARBOR_URI}" -u "${HARBOR_USERNAME}" --password-stdin
+  script:
+    - cd "${CI_PROJECT_DIR}/mlflow"
+    - docker build
+      -t "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}"
+      -f mlflow-server.Dockerfile
+      --build-arg "MLFLOW_VER=${IMAGE_TAG}" .
+    - docker push "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}"
 
