@@ -101,8 +101,9 @@ build-harbor:
   before_script:
     - harbor_creds=$(echo -n "${HARBOR_USERNAME}:${HARBOR_PASSWORD}" | base64)
     - mkdir -p /kaniko/.docker
-    - echo -n "{\"auths\":{\"https://${HARBOR_URI}\":{\"auth\":\"$harbor_creds\"}}}" > /kaniko/.docker/config.json
+    - echo -n "{\"auths\": {\"https://${HARBOR_URI}\": {\"auth\": \"${harbor_creds}\"}}}" > /kaniko/.docker/config.json
   script:
+    - cat /kaniko/.docker/config.json
     - executor
       --context "${CI_PROJECT_DIR}/mlflow"
       -d "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}"
