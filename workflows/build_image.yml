@@ -35,7 +35,7 @@ verify-image-harbor:
   rules:
     - if: $PLATFORM == "onprem"
   before_script:
-    - echo "${HARBOR_PASSWORD}" | docker login "https://{HARBOR_URI}" -u "${HARBOR_USERNAME}" --password-stdin
+    - echo "${HARBOR_PASSWORD}" | docker login "https://${HARBOR_URI}" -u "${HARBOR_USERNAME}" --password-stdin
   script:
     - exit_code=$(docker pull "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}" &> /dev/null && echo $?)
     - >
@@ -97,7 +97,7 @@ build-harbor:
   needs:
     - job: verify-image-harbor
   before_script:
-    - echo "${HARBOR_PASSWORD}" | docker login "https://{HARBOR_URI}" -u "${HARBOR_USERNAME}" --password-stdin
+    - echo "${HARBOR_PASSWORD}" | docker login "https://${HARBOR_URI}" -u "${HARBOR_USERNAME}" --password-stdin
   script:
     - cd "${CI_PROJECT_DIR}/mlflow"
     - docker build
