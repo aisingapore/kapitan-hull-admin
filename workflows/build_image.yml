@@ -67,7 +67,9 @@ generate-access-token-gcp:
 
 build-gcp:
   stage: build
-  image: "${KANIKO_IMAGE}"
+  image: 
+    name: "${KANIKO_IMAGE}"
+    entrypoint: [""]
   tags:
     - gcp
     - dind
