@@ -81,7 +81,7 @@ build-gcp:
   before_script:
     - mkdir -p /kaniko/.docker
     - cat $GCP_CONFIG > /kaniko/.docker/config.json
-    - export GCP_ENCRYPTED_TOKEN=$(echo -n "oauth2accesstoken:${GCP_TOKEN}" | base64 | sed 's/ //g')
+    - export GCP_ENCRYPTED_TOKEN=$(echo -n "oauth2accesstoken:${GCP_TOKEN}" | base64 -w 0)
     - sed -i "s/GCP_REGISTRY/${GCP_LOCATION}/g" /kaniko/.docker/config.json
     - sed -i "s/PLACEHOLDER_TOKEN/${GCP_ENCRYPTED_TOKEN}/g" /kaniko/.docker/config.json
   script:
