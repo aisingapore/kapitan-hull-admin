@@ -38,10 +38,10 @@ verify-image-harbor:
     - echo "${HARBOR_PASSWORD}" | docker login "https://${HARBOR_URI}" -u "${HARBOR_USERNAME}" --password-stdin
   script:
     - exit_code=$(docker pull "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}" &> /dev/null && echo $?)
-    - >
-      if [[ $exit_code == 0 ]];
-        then echo "Image - ${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG} found; skipping job.";
-        exit 1;
+    - |+
+      if [[ $exit_code == 0 ]]
+        then echo "Image - ${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG} found; skipping job."
+        exit 1
       fi
 
 generate-access-token-gcp:
