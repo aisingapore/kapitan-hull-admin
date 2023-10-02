@@ -19,7 +19,7 @@ verify-image-gcp:
   rules:
     - if: $PLATFORM == "gcp"
   script:
-    - exit_code=$(docker manifest inspect "${GCP_LOCATION}/${GCP_REPO}/mlflow:${IMAGE_TAG}" &> /dev/null; echo $?)
+    - exit_code=$(docker manifest inspect "${GCP_LOCATION}/${GCP_REPO}:${IMAGE_TAG}" &> /dev/null; echo $?)
     - >-
       if [[ $exit_code == 0 ]];
         then echo "Image - ${GCP_LOCATION}/${GCP_REPO}:${IMAGE_TAG} found; skipping job.";
@@ -100,7 +100,7 @@ build-harbor:
     - job: verify-image-harbor
   before_script:
     - harbor_creds=$(echo -n "${HARBOR_USERNAME}:${HARBOR_PASSWORD}" | base64)
-    - echo "{\"auths\":{\"https://${HARBOR_URI}\":{\"auth\":\"$harbor_creds\"}}}" >> /.docker/config.json
+    - echo "{\"auths\":{\"https://${HARBOR_URI}\":{\"auth\":\"$harbor_creds\"}}}" > /.docker/config.json
   script:
     - executor
       --context "${CI_PROJECT_DIR}/mlflow"
