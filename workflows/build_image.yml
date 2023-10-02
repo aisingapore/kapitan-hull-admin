@@ -30,7 +30,7 @@ verify-image-harbor:
   stage: verify
   tags:
     - dind
-    - onprem
+    - on-prem
   image: "${DIND_IMAGE}"
   rules:
     - if: $PLATFORM == "onprem"
@@ -91,7 +91,7 @@ build-harbor:
   image: "${DIND_IMAGE}"
   tags:
     - dind
-    - onprem
+    - on-prem
   rules:
     - if: $PLATFORM == "onprem"
   needs:
