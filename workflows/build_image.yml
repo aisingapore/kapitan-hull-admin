@@ -49,6 +49,8 @@ generate-access-token-gcp:
   image: google/cloud-sdk:slim
   tags:
     - gcp
+  rules:
+    - if: $PLATFORM == "gcp"
   needs:
     - job: verify-image-gcp
   before_script:
@@ -68,6 +70,8 @@ build-gcp:
   tags:
     - gcp
     - dind
+  rules:
+    - if: $PLATFORM == "gcp"
   needs:
     - job: generate-access-token-gcp
       artifacts: true
@@ -88,6 +92,8 @@ build-harbor:
   tags:
     - dind
     - onprem
+  rules:
+    - if: $PLATFORM == "onprem"
   needs:
     - job: verify-image-harbor
   before_script:
