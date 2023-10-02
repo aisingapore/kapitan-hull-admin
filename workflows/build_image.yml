@@ -99,9 +99,8 @@ build-harbor:
   needs:
     - job: verify-image-harbor
   before_script:
-    - harbor_creds=$(echo -n "${HARBOR_USERNAME}:${HARBOR_PASSWORD}" | base64)
     - mkdir -p /kaniko/.docker
-    - echo -n "{\"auths\": {\"https://${HARBOR_URI}\": {\"auth\": \"${harbor_creds}\"}}}" > /kaniko/.docker/config.json
+    - cat $HARBOR_CREDS > /kaniko/.docker/config.json
   script:
     - cat /kaniko/.docker/config.json
     - executor
