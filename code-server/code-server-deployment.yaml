@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+  labels:
+    app: code-server
+    user: secured
+  name: cs-svc-00
+spec:
+  selector:
+    app: secured-code-server
+  type: NodePort
+  ports:
+    - name: code-server-port
+      protocol: TCP
+      targetPort: server-port
+      port: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: code-server
+    user: test
+  name: secured-code-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: secured-code-server
+  template:
+    metadata:
+      labels:
+        app: secured-code-server
+    spec:    
+      initContainers:
+        - name: init-runai
+          image: busybox:1.27
+          command: ['/bin/sh']
+          args: 
+            - -c
+            - >- 
+                cp /etc/runai/runai-cluster-fqdn-sso-init.yaml /etc/.runai_config/runai-cluster-fqdn-sso.yaml &&
+                chmod 0766 /etc/.runai_config/runai-cluster-fqdn-sso.yaml
+          volumeMounts:
+            - name: common-mount
+              mountPath: /etc/.runai_config
+            - name: from-secret
+              mountPath: /etc/runai
+      containers:
+        - name: main
+          image: asia-southeast1-docker.pkg.dev/machine-learning-ops/code-server/code-server:gcp-0.2.0
+          args: 
+            - '--disable-telemetry'
+            - '--bind-addr=0.0.0.0:8080'
+            - '--auth=password'
+          ports:
+            - containerPort: 8080
+              name: server-port
+          env:
+            - name: KUBECONFIG
+              value: /home/coder/.runai/runai-cluster-fqdn-sso.yaml
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: test-cs-credentials
+                  key: cs-passwd
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: server-port
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: server-port
+            initialDelaySeconds: 15
+            periodSeconds: 600
+          volumeMounts:
+            - name: common-mount
+              mountPath: /home/coder/.runai
+            - name: pvc-mount
+              mountPath: /sample-project-pvc
+            - name: cm-mount
+              mountPath: /home/coder/scripts
+          resources:
+            requests:
+              cpu: 1
+              memory: 2G
+            limits:
+              memory: 2G
+      volumes:
+        - name: from-secret
+          secret:
+            secretName: runai-sso
+            optional: false
+        - name: common-mount
+          emptyDir: {}
+        - name: pvc-mount
+          persistentVolumeClaim:
+            claimName: gke-pvc
+        - name: cm-mount
+          configMap:
+            name: conda-startup
