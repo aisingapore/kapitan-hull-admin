@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+  labels:
+    {{- include "code-server-charts.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "code-server-charts.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "code-server-charts.selectorLabels" . | nindent 8 }}
+    spec:
+      initContainers:
+        - name: init-runai-kubeconfig
+          image: busybox:1.27
+          command: ['/bin/sh']
+          args:
+            - -c
+            - >-
+                cp {{ .Values.runaiKubeconfig.mntPath }}/{{- .Values.runaiKubeconfig.srcFile }} {{ .Values.runaiKubeconfig.dir }}/{{- .Values.runaiKubeconfig.filename }} &&
+                chmod 0766 {{ .Values.runaiKubeconfig.dir }}/{{- .Values.runaiKubeconfig.filename }}
+          volumeMounts:
+            - name: common-mount
+              mountPath: {{ .Values.runaiKubeconfig.dir }}
+            - name: from-secret
+              mountPath: {{ .Values.runaiKubeconfig.mntPath }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository | quote }}
+          args:
+            {{- range .Values.image.args }}
+            - {{ . }}
+            {{- end }}
+            - --bind-addr=0.0.0.0:{{- .Values.service.port }}
+            - .
+          env:
+            - name: KUBECONFIG
+              value: {{ .Values.codeServer.homeDir }}/{{- .Values.runaiKubeconfig.dir }}/{{- .Values.runaiKubeconfig.filename }}
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.codeServer.user }}-cs-credentials
+                  key: password
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: {{ .Values.volumes.gcpsaMntPath }}/{{ .Values.gcp.saFile }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: common-mount
+              mountPath: {{ .Values.codeServer.homeDir }}/{{- .Values.runaiKubeconfig.dir }}
+            - name: cm-mount
+              mountPath: {{ .Values.codeServer.homeDir }}/{{- .Values.volumes.csInitMntPath }}
+            - name: pvc-mount
+              mountPath: {{ .Values.volumes.pvcMntPath }}
+            - name: gcp-sa
+              mountPath: {{ .Values.volumes.gcpsaMntPath }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          {{- if .Values.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.liveness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.liveness.initialDelay }}
+            periodSeconds: {{ .Values.liveness.periodSeconds }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: from-secret
+          secret:
+            secretName: {{ .Values.volumes.runaiSecretName }}
+            optional: false
+        - name: common-mount
+          emptyDir: {}
+        - name: pvc-mount
+          persistentVolumeClaim:
+            claimName: {{ .Values.volumes.pvcName }}
+        - name: cm-mount
+          configMap:
+            name: {{ .Release.Name }}-init
+        - name: gcp-sa
+          secret:
+            secretName: {{ .Values.gcp.saSecretName }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
