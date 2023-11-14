@@ -50,7 +50,7 @@ RUN mkdir -m 0755 -p /etc/apt/keyrings \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Install RunAI CLI
-RUN wget --content-disposition https://runai.aisingapore.net/cli/linux \
+RUN wget --content-disposition https://runai-gcp.aisingapore.net/cli/linux \
 	&& chmod +x runai \
 	&& mv runai /usr/local/bin/runai
 
@@ -93,5 +93,5 @@ ENV PATH ${CONDA_HOME}/bin:${HOME_DIR}/.local/bin:${PATH}
 
 EXPOSE 8080
 ENTRYPOINT ["/usr/bin/code-server"]
-CMD ["--disable-telemetry", "--bind-addr=0.0.0.0:8080"]
+CMD ["--disable-telemetry", "--bind-addr=0.0.0.0:8080", "."]
 
