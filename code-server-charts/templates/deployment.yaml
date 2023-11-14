@@ -92,6 +92,7 @@ spec:
         - name: cm-mount
           configMap:
             name: {{ .Release.Name }}-init
+            optional: True
         - name: gcp-sa
           secret:
             secretName: {{ .Values.gcp.saSecretName }}
