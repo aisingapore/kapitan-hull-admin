@@ -5,7 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: asia-southeast1-docker.pkg.dev/machine-learning-ops/code-server/code-server:gcp-0.2.0
+  # repository: asia-southeast1-docker.pkg.dev/machine-learning-ops/code-server/code-server:gcp-0.2.0
+  repository: registry.aisingapore.net/mlops-pub/code-server:onprem-0.2.0
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -43,10 +44,10 @@ liveness:
 
 resources: 
   limits:
-    memory: 2G
+    memory: 8G
   requests:
     cpu: 2
-    memory: 2G
+    memory: 8G
 
 volumes:
   runaiSecretName: runai-sso
