@@ -43,10 +43,10 @@ liveness:
 
 resources: 
   limits:
-    memory: 8G
+    memory: 2G
   requests:
     cpu: 2
-    memory: 8G
+    memory: 2G
 
 volumes:
   runaiSecretName: runai-sso
@@ -56,6 +56,7 @@ volumes:
   gcpsaMntPath: /var/secret/cloud.google.com
 
 gcp:
+  isGCP: False
   saSecretName: gcp-sa-credentials
   saFile: gcp-service-account.json
 

@@ -53,8 +53,10 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.codeServer.user }}-cs-credentials
                   key: password
+            {{- if .Values.gcp.isGCP }}
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: {{ .Values.volumes.gcpsaMntPath }}/{{ .Values.gcp.saFile }}
+            {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
             - name: common-mount
@@ -63,8 +65,10 @@ spec:
               mountPath: {{ .Values.codeServer.homeDir }}/{{- .Values.volumes.csInitMntPath }}
             - name: pvc-mount
               mountPath: {{ .Values.volumes.pvcMntPath }}
+            {{- if .Values.gcp.isGCP }}
             - name: gcp-sa
               mountPath: {{ .Values.volumes.gcpsaMntPath }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
@@ -93,9 +97,11 @@ spec:
           configMap:
             name: {{ .Release.Name }}-init
             optional: True
+        {{- if .Values.gcp.isGCP }}
         - name: gcp-sa
           secret:
             secretName: {{ .Values.gcp.saSecretName }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
