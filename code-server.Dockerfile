@@ -49,11 +49,6 @@ RUN mkdir -m 0755 -p /etc/apt/keyrings \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
-# Install RunAI CLI
-RUN wget --content-disposition https://runai-gcp.aisingapore.net/cli/linux \
-	&& chmod +x runai \
-	&& mv runai /usr/local/bin/runai
-
 # Create a non-root user and a custom miniconda directory
 RUN echo "auth requisite pam_deny.so" >> /etc/pam.d/su \
 	&& useradd -l -m -s /bin/bash -u ${NON_ROOT_UID} ${NON_ROOT_USER} \
@@ -84,6 +79,12 @@ RUN curl -fO "https://repo.anaconda.com/miniconda/${MINICONDA_SH}" \
 	&& chmod +x ${MINICONDA_SH} \
 	&& bash ./${MINICONDA_SH} -u -b -p ${CONDA_HOME} \
 	&& rm ${MINICONDA_SH}
+
+# Install RunAI CLI
+ARG RUNAI_CLI_URI https://runai-gcp.aisingapore.net/cli/linux 
+RUN wget --content-disposition ${RUNAI_CLI_URI} \
+	&& chmod +x runai \
+	&& mv runai /usr/local/bin/runai
 
 USER ${NON_ROOT_USER}
 WORKDIR ${HOME_DIR}
