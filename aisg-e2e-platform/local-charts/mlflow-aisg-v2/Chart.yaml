@@ -1,6 +1,6 @@
 apiVersion: v2
-name: mlflow-aisg-v2
+name: mlflow-aisg
 description: Deploys MLFlow server with authentication in AISG-managed clusters. Backup cronjobs are also included in the charts.
 type: application
-version: 2.0.0
+version: 2.1.0
 
