@@ -19,4 +19,7 @@ build_trigger:
     strategy: depend
   rules:
     - if: $CI_PIPELINE_SOURCE == "web" && $WORKFLOW == "build"
+  variables:
+    PLATFORM: ${PLATFORM}
+    IMAGE_TAG: ${IMAGE_TAG}
 
