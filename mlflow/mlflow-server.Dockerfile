@@ -32,7 +32,7 @@ ENV PATH="/home/$USER/.local/bin:$PATH"
 RUN mkdir scripts/
 COPY --chown=nonroot:nonroot --chmod=0744 entrypoint.sh scripts/
 
-ENTRYPOINT [ "scripts/entrypoint.sh" ]
+ENTRYPOINT [ "./scripts/entrypoint.sh" ]
 CMD [ "--port 5005" ]
 EXPOSE 5005
 
