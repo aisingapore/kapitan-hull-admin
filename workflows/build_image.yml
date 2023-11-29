@@ -1,0 +1,115 @@
+variables:
+  DIND_IMAGE: docker:24.0.6-dind-alpine3.18
+  KANIKO_IMAGE: gcr.io/kaniko-project/executor:v1.15.0-debug
+  MLFLOW_REPO_PATH: mlflow
+  GCP_LOCATION: asia-southeast1-docker.pkg.dev
+  GCP_REPO: machine-learning-ops/mlflow-server/v2/mlflow
+  HARBOR_URI: registry.aisingapore.net
+  HARBOR_REPO: mlops-pub/mlflow-server
+
+
+stages:
+  - verify
+  - build
+
+verify-image-gcp:
+  stage: verify
+  tags:
+    - dind
+  image: "${DIND_IMAGE}"
+  rules:
+    - if: $PLATFORM == "gcp"
+  script:
+    - exit_code=$(docker manifest inspect "${GCP_LOCATION}/${GCP_REPO}:${IMAGE_TAG}" &> /dev/null; echo $?)
+    - >-
+      if [[ $exit_code == 0 ]];
+        then echo "Image - ${GCP_LOCATION}/${GCP_REPO}:${IMAGE_TAG} found; skipping job.";
+        exit 1;
+      fi
+
+verify-image-harbor:
+  stage: verify
+  tags:
+    - dind
+    - on-prem
+  image: "${DIND_IMAGE}"
+  rules:
+    - if: $PLATFORM == "onprem"
+  before_script:
+    - echo "${HARBOR_PASSWORD}" | docker login "https://${HARBOR_URI}" -u "${HARBOR_USERNAME}" --password-stdin
+  script:
+    - exit_code=$(docker manifest inspect "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}" &> /dev/null; echo $?)
+    - >-
+      if [[ $exit_code == 0 ]]
+        then echo "Image - ${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG} found; skipping job."
+        exit 1
+      fi
+
+generate-access-token-gcp:
+  stage: build
+  image: google/cloud-sdk:slim
+  tags:
+    - gcp
+  rules:
+    - if: $PLATFORM == "gcp"
+  needs:
+    - job: verify-image-gcp
+  before_script:
+    - cat $GCP_SA_KEY >> gcp_sa.json
+  script:
+    - gcloud auth login --cred-file gcp_sa.json
+    - gcp_token=$(gcloud auth print-access-token)
+    - echo "GCP_TOKEN=${gcp_token}" >> gcp_token.env
+  artifacts:
+    reports:
+      dotenv: gcp_token.env
+    expire_in: 1hr
+
+build-gcp:
+  stage: build
+  image: 
+    name: "${KANIKO_IMAGE}"
+    entrypoint: [""]
+  tags:
+    - gcp
+    - dind
+  rules:
+    - if: $PLATFORM == "gcp"
+  needs:
+    - job: generate-access-token-gcp
+      artifacts: true
+  before_script:
+    - mkdir -p /kaniko/.docker
+    - cat $GCP_CONFIG > /kaniko/.docker/config.json
+    - export GCP_ENCRYPTED_TOKEN=$(echo -n "oauth2accesstoken:${GCP_TOKEN}" | base64 -w 0)
+    - sed -i "s/GCP_REGISTRY/${GCP_LOCATION}/g" /kaniko/.docker/config.json
+    - sed -i "s/PLACEHOLDER_TOKEN/${GCP_ENCRYPTED_TOKEN}/g" /kaniko/.docker/config.json
+  script:
+    - executor
+      --context "${CI_PROJECT_DIR}/docker-builds/mlflow"
+      --destination "${GCP_LOCATION}/${GCP_REPO}:${IMAGE_TAG}" 
+      --dockerfile Dockerfile
+      --build-arg "MLFLOW_VER=${IMAGE_TAG}" 
+
+build-harbor:
+  stage: build
+  image: 
+    name: "${KANIKO_IMAGE}"
+    entrypoint: [""]
+  tags:
+    - dind
+    - on-prem
+  rules:
+    - if: $PLATFORM == "onprem"
+  needs:
+    - job: verify-image-harbor
+  before_script:
+    - mkdir -p /kaniko/.docker
+    - cat $HARBOR_CREDS > /kaniko/.docker/config.json
+  script:
+    - executor
+      --context "${CI_PROJECT_DIR}/docker-builds/mlflow"
+      -d "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}"
+      -f Dockerfile
+      --build-arg "MLFLOW_VER=${IMAGE_TAG}" 
+

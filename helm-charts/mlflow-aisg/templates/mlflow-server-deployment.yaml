@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.deploymentName }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.service.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.service.appName }}
+    spec:
+      containers:
+        - image: {{ .Values.deployment.image }}
+          imagePullPolicy: Always
+          name: {{ .Values.deployment.containerName }}
+          {{- if .Values.deployment.args }}
+          args:
+            {{- range .Values.deployment.args }}
+            - {{ . }}
+            {{- end }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: {{ .Values.deployment.resources.memory }}
+              cpu: {{ .Values.deployment.resources.cpu }}
+            limits:
+              memory: {{ .Values.deployment.limits.memory }}
+              cpu: {{ .Values.deployment.limits.cpu }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+              name: {{ .Values.deployment.portName }}
+          volumeMounts:
+            - name: {{ .Values.persistent.volumeName }}
+              mountPath: {{ .Values.persistent.mountPath }}
+            {{- if eq .Values.config.artefactBackend "gcs" }}
+            - name: {{ .Values.gcp.serviceAccount.volumeName }}
+              mountPath: {{ .Values.gcp.serviceAccount.mountPath }}
+              readOnly: true
+            {{- end }}
+          env:
+            - name: DATABASE_URL
+            {{- if .Values.config.database.enableCustom }}
+              value: {{ .Values.config.database.customTrackingDBURL }}
+            {{- else }}
+              value: {{ printf "sqlite:///%s/mlflow/mlflow.db" .Values.persistent.mountPath }}
+            {{- end }}
+            {{- if .Values.config.authSecretName }}
+            - name: AUTH_DATABASE_URL
+            {{- if .Values.config.database.enableCustom }}
+              value: {{ .Values.config.database.customAuthDBURL }}
+            {{- else }}
+              value: {{ printf "sqlite:///%s/mlflow/basic-auth.db" .Values.persistent.mountPath }}
+            {{- end }}
+            - name: AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.config.authSecretName }}
+                  key: username
+            - name: AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.config.authSecretName }}
+                  key: password
+            {{- end }}
+            - name: ARTIFACT_BACKEND
+              value: {{ .Values.config.artefactBackend | upper }}
+            {{- if eq .Values.config.artefactBackend "ecs" }}
+            - name: ARTIFACT_URL
+              value: {{ printf "s3://%s/mlflow/mlflow-tracking-server" .Values.config.bucketName  }}
+            - name: MLFLOW_S3_ENDPOINT_URL
+              value: {{ .Values.ecs.endpointURL }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.ecs.accessKeyId }}
+                  name: {{ .Values.ecs.s3CredentialsName }}
+                  optional: False
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.ecs.secretAccessKey }}
+                  name: {{ .Values.ecs.s3CredentialsName }}
+                  optional: False
+            {{- else if eq .Values.config.artefactBackend "gcs" }}
+            - name: ARTIFACT_URL
+              value: {{ printf "gs://%s/mlflow/mlflow-tracking-server" .Values.config.bucketName  }}
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: {{ .Values.gcp.serviceAccount.mountPath }}/{{ .Values.gcp.serviceAccount.jsonName }}
+            {{- end }}
+      imagePullSecrets:
+        {{- if eq .Values.config.artefactBackend "ecs" }}
+        - name: {{ .Values.ecs.harborCredentialsName }}
+        {{- else if eq .Values.config.artefactBackend "gcs" }}
+        - name: {{ .Values.gcp.credentialsName }}
+        {{- end }}
+      volumes:
+        - name: {{ .Values.persistent.volumeName }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistent.volumeClaimName }}
+        {{- if eq .Values.config.artefactBackend "gcs" }}
+        - name: {{ .Values.gcp.serviceAccount.volumeName }}
+          secret:
+            secretName: {{ .Values.gcp.serviceAccount.secretName }}
+        {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

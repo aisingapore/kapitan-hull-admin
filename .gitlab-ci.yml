@@ -1,0 +1,25 @@
+stages:
+  - triggers
+
+.trigger_template: &trigger
+  stage: triggers
+
+mlflow_trigger:
+  <<: *trigger
+  trigger:
+    include: workflows/deploy_mlflow.yml
+    strategy: depend
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" && $WORKFLOW == "mlflow"
+
+build_trigger:
+  <<: *trigger
+  trigger:
+    include: workflows/build_image.yml
+    strategy: depend
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" && $WORKFLOW == "build"
+  variables:
+    PLATFORM: ${PLATFORM}
+    IMAGE_TAG: ${IMAGE_TAG}
+

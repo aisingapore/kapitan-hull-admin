@@ -1,0 +1,91 @@
+{{- if .Values.config.backupJob }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.backup.cronjobName }}
+spec:
+  schedule: {{ .Values.backup.schedule | quote }}
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: {{ .Values.backup.timeoutSec }}
+      template:
+        spec:
+          containers:
+          - name: {{ printf "%s-%s" .Values.backup.containerName .Values.config.artefactBackend }}
+            {{- if eq .Values.config.artefactBackend "gcs" }}
+            image: {{ .Values.backup.gcs.image }}
+            {{- else if eq .Values.config.artefactBackend "ecs" }}
+            image: {{ .Values.backup.ecs.image }}
+            {{- end }}
+            imagePullPolicy: Always
+            command: [ "/bin/bash", "-c" ]
+            args:
+            {{- if eq .Values.config.artefactBackend "gcs" }}
+            {{- range .Values.backup.gcs.args }}
+            - {{ . }}
+            {{- end }}
+            {{- else if eq .Values.config.artefactBackend "ecs" }}
+            {{- range .Values.backup.ecs.args }}
+            - {{ . }}
+            {{- end }}
+            {{- end }}
+            volumeMounts:
+            - name: {{ .Values.persistent.volumeName }}
+              mountPath: {{ .Values.persistent.mountPath }}
+            {{- if eq .Values.config.artefactBackend "gcs" }}
+            - name: {{ .Values.gcp.serviceAccount.volumeName }}
+              mountPath: {{ .Values.gcp.serviceAccount.mountPath }}
+              readOnly: true
+            {{- end }}
+            env:
+            - name: MLFLOW_BACKUP_PATH
+              value: {{ printf "mlflow/%s" .Values.backup.path }}
+            - name: MLFLOW_DATABASE_PATH
+              value: {{ printf "%s/mlflow/mlflow.db" .Values.persistent.mountPath }}
+            {{- if eq .Values.config.artefactBackend "gcs" }}
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: {{ .Values.gcp.serviceAccount.mountPath }}/{{ .Values.gcp.serviceAccount.jsonName }}
+            - name: GCS_BUCKET
+              value: {{ .Values.config.bucketName }}
+            - name: GCP_PROJECT_ID
+              value: {{ .Values.gcp.projectId }}
+            {{- else if eq .Values.config.artefactBackend "ecs" }}
+            - name: S3_BUCKET
+              value: {{ .Values.config.bucketName }}
+            - name: AWS_ENDPOINT_URL
+              value: {{ .Values.ecs.endpointURL }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.ecs.accessKeyId }}
+                  name: {{ .Values.ecs.s3CredentialsName }}
+                  optional: False
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.ecs.secretAccessKey }}
+                  name: {{ .Values.ecs.s3CredentialsName }}
+                  optional: False
+            {{- end }}
+          restartPolicy: OnFailure
+          imagePullSecrets:
+          {{- if eq .Values.config.artefactBackend "gcs" }}
+          - name: {{ .Values.gcp.credentialsName }}
+          {{- else if eq .Values.config.artefactBackend "ecs" }}
+          - name: {{ .Values.ecs.harborCredentialsName }}
+          {{- end }}
+          volumes:
+          {{- if eq .Values.config.artefactBackend "gcs" }}
+          - name: {{ .Values.gcp.serviceAccount.volumeName }}
+            secret:
+              secretName: {{ .Values.gcp.serviceAccount.secretName }}
+          {{- end }}
+          - name: {{ .Values.persistent.volumeName }}
+            persistentVolumeClaim:
+              claimName: {{ .Values.persistent.volumeClaimName }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
+
