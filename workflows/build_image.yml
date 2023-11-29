@@ -86,9 +86,9 @@ build-gcp:
     - sed -i "s/PLACEHOLDER_TOKEN/${GCP_ENCRYPTED_TOKEN}/g" /kaniko/.docker/config.json
   script:
     - executor
-      --context "${CI_PROJECT_DIR}/mlflow"
+      --context "${CI_PROJECT_DIR}/docker-builds/mlflow"
       --destination "${GCP_LOCATION}/${GCP_REPO}:${IMAGE_TAG}" 
-      --dockerfile mlflow-server.Dockerfile
+      --dockerfile Dockerfile
       --build-arg "MLFLOW_VER=${IMAGE_TAG}" 
 
 build-harbor:
@@ -108,8 +108,8 @@ build-harbor:
     - cat $HARBOR_CREDS > /kaniko/.docker/config.json
   script:
     - executor
-      --context "${CI_PROJECT_DIR}/mlflow"
+      --context "${CI_PROJECT_DIR}/docker-builds/mlflow"
       -d "${HARBOR_URI}/${HARBOR_REPO}:${IMAGE_TAG}"
-      -f mlflow-server.Dockerfile
+      -f Dockerfile
       --build-arg "MLFLOW_VER=${IMAGE_TAG}" 
 

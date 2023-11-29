@@ -1,9 +1,0 @@
-pv:
-  name: filestore-standard
-  storage: 700Gi
-  path: "/mnt/aisg"
-pvc:
-  name: fstore-rwx-pvc
-  namespace: polyaxon-v1
-  storage: 700Gi
-
