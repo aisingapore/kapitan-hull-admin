@@ -14,7 +14,7 @@ config:
 
 gcp:
   # -- Name of the Secret that contains the imagePullSecret for MLflow.
-  credentialsName: gcp-imagepullsecrets
+  credentialsName: gar-credentials
   # -- GCP project ID.
   projectId: 100e-proj-aut0
   serviceAccount:
@@ -46,7 +46,8 @@ deployment:
   # -- Container name that runs the mlflow-server.
   containerName: mlflow
   # -- Image to pull mlflow-server from.
-  image: registry.aisingapore.net/mlops-pub/mlflow-server:2.5.0
+  # image: registry.aisingapore.net/mlops-pub/mlflow-server:2.5.0
+  image: asia-southeast1-docker.pkg.dev/machine-learning-ops/mlflow-server/v2/mlflow:2.7.1
   # -- Arguments to pass to the image.
   args:
     - "-w 2"
@@ -54,10 +55,11 @@ deployment:
   # -- Requested CPU and RAM to run the mlflow-server on.
   resources:
     memory: "2Gi"
-    cpu: "0.5"
+    cpu: "1"
   # -- Maximum CPU and RAM that the mlflow-servers will be provisioned with.
   limits:
     memory: "2Gi"
+    cpu: "1"
 persistent:
   # -- Reference name for volume.
   volumeName: mlflow-persistent-storage
