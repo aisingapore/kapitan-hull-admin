@@ -1,32 +1,29 @@
-# AI Singapore's End-To-End Platform for 100E Projects
+# Kapitan Hull Administrator
 
-A Helm chart repository for AISG's E2E Platform (Polyaxon & MLFlow).
+![Kapitan Hull Administrator Banner](.assets/kapitan-hull-admin-banner.png)
 
-This repository is to setup the MLFlow server within the K8S cluster 
-provided. This has to be installed after the Polyaxon server is set up 
-with its persistence storage. Both MLFlow and Polyaxon services have to
-be in the same namespace (`polyaxon-v1` by default).
+## Table of Contents
 
-## How to Use
+- [Kapitan Hull Administrator](#kapitan-hull-administrator)
+  - [Table of Contents](#table-of-contents)
+  - [Preface](#preface)
+  - [Usage](#usage)
 
-- Check `aisg-e2e-platform/values.yaml` and change the values 
-  accordingly.
-- Check `run.sh` and see if there're any issues, and simply run 
-  `bash run.sh`. Ensure that the target Kubernetes cluster is your 
-  current context.
-- Check that polyaxon runs 
-  (`polyaxon port-forward -p 8888 -n polyaxon-v1 -r aisg-e2e-platform &`)
+## Preface
 
-## Versions Used
-- Polyaxon 1.14.3
+This repository contains Helm charts and Docker builds for global 
+components of AI Singapore's end-to-end ML projects.
 
-## Known Issues/Quirks
-- This repository only takes into account local storage use. Would need 
-  to build it further to dynamically allow GCP installations as well. 
-  For now, [Setup Scripts V2](https://gitlab.aisingapore.net/data-engineering/setup-scripts-v2) 
-  from the Data Engineering team would suffice with the use of Terraform 
-  scripts.
-- The image used for MLFlow server deployment requires the use of 
-  `ryzalk/mlflow-nginx-server`, which is not an official MLFlow image, 
-  or one that is hosted by AISG 
+This repository is to setup the following by the MLOps team within the 
+K8S clusters created by the DataOps and InfraOps teams:
 
+- MLFlow
+- VSCode
+
+This has to be installed after the cluster is set up with its 
+persistence storage and an orchestrator of choice (RunAI, Polyaxon, 
+etc.). 
+
+## Usage
+
+> To be added...
