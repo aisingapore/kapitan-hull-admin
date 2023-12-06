@@ -1,0 +1,66 @@
+# Default values for code-server-charts.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  # repository: asia-southeast1-docker.pkg.dev/machine-learning-ops/code-server/code-server:gcp-0.2.0
+  repository: registry.aisingapore.net/mlops-pub/code-server:onprem-0.2.0
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+  args:
+    - "--disable-telemetry"
+    - "--auth=password"
+
+runaiKubeconfig:
+  dir: .runai_config
+  filename: runai-cluster.yaml
+  mntPath: /etc/runai
+  srcFile: runai-cluster-oidc.yaml
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+podAnnotations: {}
+
+codeServer:
+  user:
+  password:
+  homeDir: "/home/coder"
+  condaBin: "/miniconda3/bin/conda"
+  uid: 2222
+
+
+service:
+  port: 8080
+
+liveness:
+  enabled: false
+  path: /healthz
+  initialDelay: 30
+  periodSeconds: 30
+
+resources: 
+  limits:
+    memory: 8G
+  requests:
+    cpu: 2
+    memory: 8G
+
+volumes:
+  runaiSecretName: runai-sso
+  pvcName: gke-pvc
+  pvcMntPath: /pvc-data
+  csInitMntPath: scripts/
+  gcpsaMntPath: /var/secret/cloud.google.com
+
+gcp:
+  isGCP: False
+  saSecretName: gcp-sa-credentials
+  saFile: gcp-service-account.json
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

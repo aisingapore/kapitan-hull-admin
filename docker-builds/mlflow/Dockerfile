@@ -7,7 +7,7 @@ LABEL author='Deon Chia'
 ARG USER=nonroot
 ARG DEBIAN_FRONTEND=noninteractive
 ARG EN_UTF="en_US.UTF-8"
-ARG MLFLOW_VER
+ARG MLFLOW_VER="2.8.1"
 
 RUN apt -q update && \
 	apt install -y -qq curl \

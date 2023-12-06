@@ -1,6 +1,0 @@
-apiVersion: v2
-name: aisg-pvc
-description: Deploys a Persistent Volume Claim locally for AISG E2E platform.
-type: application
-version: 1.0.0
-

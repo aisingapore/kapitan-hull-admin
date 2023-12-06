@@ -1,6 +1,0 @@
-apiVersion: v2
-name: mlflow-aisg
-description: Deploys MLFlow server in AISG-managed clusters
-type: application
-version: 1.0.0
-
