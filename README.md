@@ -1,6 +1,6 @@
 # Kapitan Hull Administrator
 
-![Kapitan Hull Administrator Banner](.assets/kapitan-hull-admin-banner.png)
+![Kapitan Hull Administrator Banner](./assets/kapitan-hull-admin-banner.png)
 
 ## Table of Contents
 
