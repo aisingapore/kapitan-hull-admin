@@ -11,6 +11,10 @@ spec:
       labels:
         app: {{ .Values.service.appName }}
     spec:
+      securityContext:
+        runAsUser: {{ .Values.securityContext.UID }}
+        runAsGroup: {{ .Values.securityContext.GID }}
+        fsGroup: {{ .Values.securityContext.fsGroup }}
       containers:
         - image: {{ .Values.deployment.image }}
           imagePullPolicy: Always

@@ -5,9 +5,11 @@ LABEL decription='MLflow Server with basic auth and aws/gcp artefact storage'
 LABEL author='Deon Chia'
 
 ARG USER=nonroot
+ARG UID=1005
+ARG GROUP=nonroot
+ARG GID=2222
 ARG DEBIAN_FRONTEND=noninteractive
 ARG EN_UTF="en_US.UTF-8"
-ARG MLFLOW_VER="2.8.1"
 
 RUN apt -q update && \
 	apt install -y -qq curl \
@@ -21,16 +23,18 @@ RUN apt -q update && \
 RUN sed -i "s/# $EN_UTF/$EN_UTF/" /etc/locale.gen \
 	&& locale-gen
 ENV LANG=$EN_UTF
-RUN adduser --gecos '' -u 1005 --disabled-password $USER
+RUN groupadd -g ${GID} ${GROUP} \
+	&& adduser --gecos '' -u ${UID} -gid ${GID} --disabled-password ${USER}
 
-USER $USER
-WORKDIR /home/$USER
+USER ${USER}
+WORKDIR /home/${USER}
 
-RUN pip3 -qq install mlflow==$MLFLOW_VER google-cloud-storage boto3
+ARG MLFLOW_VER="2.8.1"
+RUN pip3 -qq install mlflow==${MLFLOW_VER} google-cloud-storage boto3
 ENV PATH="/home/$USER/.local/bin:$PATH"
 
 RUN mkdir scripts/
-COPY --chown=nonroot:nonroot --chmod=0744 entrypoint.sh scripts/
+COPY --chown=${USER}:${USER} --chmod=0744 entrypoint.sh scripts/
 
 ENTRYPOINT [ "./scripts/entrypoint.sh" ]
 CMD [ "--port 5005" ]

@@ -107,4 +107,9 @@ backup:
     args:
     - aws s3 cp $MLFLOW_DATABASE_PATH s3://$S3_BUCKET/$MLFLOW_BACKUP_PATH/$(TZ='Asia/Singapore' date +"%d%m%y_%H%M%S")_mlflow.db
 
+securityContext:
+  UID: 1005
+  GID: 2222
+  fsGroup: 2222
+
 tolerations: []
