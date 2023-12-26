@@ -112,4 +112,14 @@ securityContext:
   GID: 2222
   fsGroup: 2222
 
+ingress:
+  # -- To create ingress component on Chart installation
+  enable: true
+  # -- Name of the Ingress component to be installed
+  name: mlflow-server-ingress
+  # -- Ingress Class Name - nginx, if nginx ingress is installed on cluster, else "" for onprem
+  className: "nginx"
+  # -- Hostname for the Ingress to be configured to 
+  hostname: ""
+
 tolerations: []
