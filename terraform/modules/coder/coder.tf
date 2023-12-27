@@ -66,7 +66,7 @@ resource "helm_release" "coder-server" {
 	namespace  = var.namespace
 
 	values = [
-		"${file("./modules/coder/values.yaml")}"
+		"${file("../../modules/coder/values.yaml")}"
 	]
 
 	set {
@@ -81,11 +81,23 @@ resource "helm_release" "coder-server" {
 		type  = "string"
 	}
 
+	set {
+		name  = "coder.image.repo"
+		value = var.coder_image
+		type  = "string"
+	}
+
+	set {
+		name  = "coder.image.tag"
+		value = var.coder_image_tag
+		type  = "string"
+	}
+
 	dynamic "set" {
-		for_each = var.auth_method == "oidc" ? [1] : [0]
+		for_each = var.auth_method == "oidc" ? ["CODER_OIDC_ISSUER_URL"] : []
 		content {
 			name  = "coder.env[3].name"
-			value = "CODER_OIDC_ISSUER_URL"
+			value = set.value
 			type  = "string"
 		}
 	}
@@ -100,10 +112,10 @@ resource "helm_release" "coder-server" {
 	}
 
 	dynamic "set" {
-		for_each = var.auth_method == "oidc" ? [1] : [0]
+		for_each = var.auth_method == "oidc" ? ["CODER_OIDC_EMAIL_DOMAIN"] : []
 		content {
 			name  = "coder.env[4].name"
-			value = "CODER_OIDC_EMAIL_DOMAIN"
+			value = set.value
 			type  = "string"
 		}
 	}
@@ -118,10 +130,10 @@ resource "helm_release" "coder-server" {
 	}
 	
 	dynamic "set" {
-		for_each = var.auth_method == "oidc" ? [1] : [0]
+		for_each = var.auth_method == "oidc" ? ["CODER_OIDC_CLIENT_ID"] : []
 		content {
 			name  = "coder.env[5].name"
-			value = "CODER_OIDC_CLIENT_ID"
+			value = set.value
 			type  = "string"
 		}
 	}
@@ -136,10 +148,10 @@ resource "helm_release" "coder-server" {
 	}
 
 	dynamic "set" {
-		for_each = var.auth_method == "oidc" ? [1] : [0]
+		for_each = var.auth_method == "oidc" ? ["CODER_OIDC_CLIENT_SECRET"] : []
 		content {
 			name  = "coder.env[6].name"
-			value = "CODER_OIDC_CLIENT_SECRET"
+			value = set.value
 			type  = "string"
 		}
 	}

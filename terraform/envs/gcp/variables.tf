@@ -8,16 +8,6 @@ variable "root_url" {
 	description = "Root URL for Mlflow and Coder servers, without the resource header. e.g. 100e-exampleproj.aisingapore.net"
 }
 
-variable "target_env" {
-	type		= string
-	description = "Target deployment environment; either 'rke' or 'gke'"
-
-	validation {
-		condition	  = contains(["rke", "gke"], var.target_env)
-		error_message = "Invalid environment specified"
-	}
-}
-
 variable "artefact_bucket_name" {
 	type		= string
 	description = "Bucket name where artefacts will be stored"
@@ -36,7 +26,7 @@ variable "kubeconfig" {
 
 variable "pvc_name" {
 	type		= string
-	description = "Name of the RWX Persistent Storage Claim for MLflow"
+	description = "Name of the RWX Persistent Storage Claim to be created"
 }
 
 variable "gcs_credentials" {
@@ -47,18 +37,6 @@ variable "gcs_credentials" {
 variable "runai_kubeconfig" {
 	type	    = string
 	description = "Path to the non-initialised kubeconfig for the runai cluster"
-}
-
-variable "ecs_access_key" {
-	type	    = string
-	description = "Access Key ID for ECS"
-	default		= ""
-}
-
-variable "ecs_secret_key" {
-	type	    = string
-	description = "Secret Key for ECS"
-	default		= ""
 }
 
 variable "coder_auth" {
