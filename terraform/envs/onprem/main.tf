@@ -64,7 +64,7 @@ module "mlflow-server" {
 	pvc_name			 = var.pvc_name
 	custom_image		 = local.harbor_mlflow_repo
 	kubeconfig			 = var.kubeconfig
-	ingress_hostname     = format("mlflow2.%s", var.root_url)
+	ingress_hostname     = format("mlflow.%s", var.root_url)
 	gcp_project_id		 = null
 }
 
@@ -73,7 +73,7 @@ module "coder-server" {
 	kubeconfig			 = var.kubeconfig
 	namespace			 = var.namespace
 	coder_image			 = "registry.aisingapore.net/mlops-pub/coder"
-	coder_url			 = format("coder2.%s", var.root_url)
+	coder_url			 = format("coder.%s", var.root_url)
 	auth_method			 = var.coder_auth
 	oidc_issuer_url		 = var.coder_auth == "oidc" ? var.oidc_issuer_url : null
 	oidc_email_domain	 = var.coder_auth == "oidc" ? var.oidc_email_domain : null
