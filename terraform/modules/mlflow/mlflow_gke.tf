@@ -27,7 +27,7 @@ resource "random_password" "mlflow_password" {
 
 
 resource "helm_release" "mlflow-server" {
-	chart	  = "../helm-charts/mlflow"
+	chart	  = "../../../helm-charts/mlflow"
 	name	  = "mlflow-server"
 	namespace = var.namespace
 
@@ -49,10 +49,13 @@ resource "helm_release" "mlflow-server" {
 		type  = "string"
 	}	
 
-	set {
-		name  = "gcp.projectId"
-		value = var.gcp_project_id
-		type  = "string"
+	dynamic "set" {
+		for_each = var.backend_storage == "gcs" ? [var.gcp_project_id] : []
+		content {
+			name  = "gcp.projectId"
+			value = set.value
+			type  = "string"
+		}
 	}
 
 	set {

@@ -1,3 +1,15 @@
+variable "coder_image" {
+	type		= string
+	description = "Image repository for Coder, defaults to ghcr.io; provide custom Harbor repository if deploying to OCP clusters"
+	default		= "ghcr.io/coder/coder"
+}
+
+variable "coder_image_tag" {
+	type		= string
+	description = "Image tag for Coder"
+	default		= "v2.5.1"
+}
+
 variable "kubeconfig" {
 	type		= string
 	description = "Location of the cluster's kubeconfig file"
