@@ -1,0 +1,13 @@
+# Adapted from https://gist.github.com/ryzalk/a1f47ddc8032811ab66841a6a82affe8
+create_user:
+  tracking_uri: "https://mlflow.my-project.aisingapore.net"
+  username: "test-user-01"
+  password: ""
+
+create_exp:
+  tracking_uri: "https://mlflow.my-project.aisingapore.net"
+  experiment_name: "test-exp-01"
+  artifact_location: "gs://my-project/mlflow/mlflow-tracking-server"
+  users_to_add:
+    - "test-user-01"
+  permission: "EDIT"
