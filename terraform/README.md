@@ -11,6 +11,7 @@ In essence, this terraform module will manage the following resources:
 - `gcp-credentials` Kubernetes Secret (GKE)
 - `s3-credentials` Kubernetes Secret (RKE)
 
+`harbor-credentials` have to be set prior to running the Terraform scripts.
 
 ## Pre-requisites
 
