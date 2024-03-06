@@ -10,10 +10,10 @@ terraform {
 }
 
 locals {
-  namespace             = "runai-dc-test-proj"
-  common_pvc_name       = "mock-pvc" 
-  codeserver_image_repo = "registry.aisingapore.net/mlops-pub/code-server:4.16.1"
-  common_pvc_path       = "/pvc-data"
+  namespace             = "runai-proj"
+  common_pvc_name       = "proj-pvc"
+  codeserver_image_repo = "registry.aisingapore.net/mlops-pub/code-server:v4.20.0"
+  common_pvc_path       = "/proj-pvc"
 }
 
 provider "coder" {
@@ -100,6 +100,7 @@ resource "coder_agent" "main" {
       sudo chown coder:coder -R /home/coder/
       /miniconda3/bin/conda init bash
     fi
+    echo 'export PATH=${local.common_pvc_path}/utils:$PATH' >> /home/coder/.bashrc
 
     if [[ ! -d /home/coder/.runai_config ]]; then
       echo "Unable to find runai configuration in home directory, initialising runai configuration file..."
@@ -113,6 +114,12 @@ resource "coder_agent" "main" {
       /miniconda3/bin/conda config --append pkgs_dirs /pvc-data/.conda/pkgs/
       /miniconda3/bin/conda config --append envs_dirs /pvc-data/.conda/envs/
       /miniconda3/bin/conda config --set env_prompt '({name})'
+    fi
+    
+    if [[ ! -f /home/coder/config.json ]]; then
+      echo "Unable to find image repository credentials in home directory, writing credential file (read-only).."
+      echo -n $HARBOR_CREDENTIALS >> /home/coder/config.json
+      sudo chmod 400 /home/coder/config.json
     fi
     
     /usr/bin/code-server --disable-telemetry --auth none --port 13337 >/tmp/code-server.log 2>&1 &
@@ -274,8 +281,8 @@ resource "kubernetes_deployment" "main" {
       }
       spec {
         security_context {
-          run_as_user = 1000
-          fs_group    = 1000
+          run_as_user = 2222
+          fs_group    = 2222
         }
         init_container {
           name             = "runai-init"
@@ -296,7 +303,7 @@ resource "kubernetes_deployment" "main" {
           image_pull_policy = "Always"
           command           = ["bash", "-c", coder_agent.main.init_script]
           security_context {
-            run_as_user = "1000"
+            run_as_user = "2222"
           }
           env {
             name  = "CODER_AGENT_TOKEN"
@@ -308,31 +315,40 @@ resource "kubernetes_deployment" "main" {
           }
           env {
             name = "AWS_ACCESS_KEY_ID"
-			value_from {
+			      value_from {
               secret_key_ref {
-				name = "s3-credentials"
-				key  = "accessKeyId"
+				        name = "s3-credentials"
+				        key  = "accessKeyId"
               }
-			}
+			      }
           }
           env {
-			name = "AWS_SECRET_ACCESS_KEY"
-			value_from {
+			      name = "AWS_SECRET_ACCESS_KEY"
+			      value_from {
               secret_key_ref {
                 name = "s3-credentials"
-				key  = "secretAccessKey"
+				        key  = "secretAccessKey"
               }
-			}
+			      }
           }
           env {
             name = "S3_ENDPOINT_URL"
-			value_from {
-			  secret_key_ref {
-				name = "s3-credentials"
-				key  = "ecsS3EndpointURL"
-			  }
-			}
-		  }
+			      value_from {
+			        secret_key_ref {
+				        name = "s3-credentials"
+				        key  = "ecsS3EndpointURL"
+			        }
+			      }
+		      }
+          env {
+            name = "HARBOR_CREDENTIALS"
+            value_from {
+              secret_key_ref {
+                name = "harbor-credentials"
+                key  = ".dockerconfigjson"
+              }
+            }
+          }
           resources {
             requests = {
               "cpu"    = "250m"
