@@ -89,7 +89,6 @@ data "coder_workspace" "me" {}
 resource "coder_agent" "main" {
   os                     = "linux"
   arch                   = "amd64"
-  startup_script_timeout = 120
   startup_script         =<<-EOT
     #!/bin/bash
     set -e
@@ -111,8 +110,8 @@ resource "coder_agent" "main" {
 
     if [[ ! -f /home/coder/.condarc ]]; then
       echo "Unable to find conda configuration in home directory, initialising conda configuration file..."
-      /miniconda3/bin/conda config --append pkgs_dirs /pvc-data/.conda/pkgs/
-      /miniconda3/bin/conda config --append envs_dirs /pvc-data/.conda/envs/
+      /miniconda3/bin/conda config --append pkgs_dirs ${local.common_pvc_path}/.conda/pkgs/
+      /miniconda3/bin/conda config --append envs_dirs ${local.common_pvc_path}/.conda/envs/
       /miniconda3/bin/conda config --set env_prompt '({name})'
     fi
     
