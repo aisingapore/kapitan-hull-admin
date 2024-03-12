@@ -64,6 +64,12 @@ resource "helm_release" "mlflow-server" {
 		type  = "string"
 	}
 
+	set {
+		name = "nodeSelector.node-role\\.kubernetes\\.io/runai-cpu-worker"
+    	value = ""
+		type = "string"
+	}
+	
 	dynamic "set" {
 		for_each = var.custom_image != null ? [var.custom_image] : []
 		content {

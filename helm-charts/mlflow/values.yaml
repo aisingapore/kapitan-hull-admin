@@ -123,3 +123,4 @@ ingress:
   hostname: ""
 
 tolerations: []
+nodeSelector: {}

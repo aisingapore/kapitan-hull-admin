@@ -42,6 +42,18 @@ resource "helm_release" "coder-postgres-database" {
 		value = "5Gi"
 		type  = "string"
 	}
+
+	set {
+		name = "primary.nodeSelector.node-role\\.kubernetes\\.io/runai-cpu-worker"
+    	value = ""
+		type = "string"
+	}
+
+	set {
+		name = "image.pullPolicy"
+		value = "Always"
+		type = "string"
+	}
 }
 
 resource "kubernetes_secret" "coder-db-url" {
@@ -93,6 +105,18 @@ resource "helm_release" "coder-server" {
 		type  = "string"
 	}
 
+	set {
+		name = "coder.image.pullPolicy"
+		value = "Always"
+		type = "string"
+	}
+
+	set {
+		name = "coder.nodeSelector.node-role\\.kubernetes\\.io/runai-cpu-worker"
+    	value = ""
+		type = "string"
+	}
+	
 	dynamic "set" {
 		for_each = var.auth_method == "oidc" ? ["CODER_OIDC_ISSUER_URL"] : []
 		content {
