@@ -65,14 +65,14 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-${SYS_OS}-${SYS_ARCH}.zip" \
 	&& rm -r awscliv2.zip aws
 
 # Install code-server
-ARG CODE_VER="4.16.1"
+ARG CODE_VER="4.22.0"
 ARG CODE_BIN="code-server_${CODE_VER}_amd64.deb"
 RUN curl -fsOL "https://github.com/coder/code-server/releases/download/v${CODE_VER}/${CODE_BIN}" \
 	&& dpkg -i "${CODE_BIN}" \
 	&& rm "${CODE_BIN}"
 
 # Miniconda arguments
-ARG CONDA_VER="py310_23.5.2-0"
+ARG CONDA_VER="py311_24.1.2-0"
 ARG MINICONDA_SH="Miniconda3-${CONDA_VER}-Linux-${SYS_ARCH}.sh"
 
 RUN curl -fO "https://repo.anaconda.com/miniconda/${MINICONDA_SH}" \

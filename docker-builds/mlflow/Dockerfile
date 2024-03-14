@@ -29,7 +29,7 @@ RUN groupadd -g ${GID} ${GROUP} \
 USER ${USER}
 WORKDIR /home/${USER}
 
-ARG MLFLOW_VER="2.8.1"
+ARG MLFLOW_VER="2.11.1"
 RUN pip3 -qq install mlflow==${MLFLOW_VER} google-cloud-storage boto3
 ENV PATH="/home/$USER/.local/bin:$PATH"
 
