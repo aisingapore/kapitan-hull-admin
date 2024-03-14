@@ -189,6 +189,24 @@ resource "helm_release" "coder-server" {
 		}
 	}
 
+	dynamic "set" {
+		for_each = var.auth_method == "oidc" ? ["CODER_OIDC_ALLOW_SIGNUPS"] : []
+		content {
+			name  = "coder.env[7].name"
+			value = set.value
+			type  = "string"
+		}
+	}
+
+	dynamic "set" {
+		for_each = var.auth_method == "oidc" ? ["false"] : []
+		content {
+			name  = "coder.env[7].value"
+			value = set.value
+			type  = "string"
+		}
+	}
+
 }
 
 	
