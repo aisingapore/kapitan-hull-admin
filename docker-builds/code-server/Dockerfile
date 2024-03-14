@@ -80,12 +80,6 @@ RUN curl -fO "https://repo.anaconda.com/miniconda/${MINICONDA_SH}" \
 	&& bash ./${MINICONDA_SH} -u -b -p ${CONDA_HOME} \
 	&& rm ${MINICONDA_SH}
 
-# Install RunAI CLI
-ARG RUNAI_CLI_URI https://runai-gcp.aisingapore.net/cli/linux 
-RUN wget --content-disposition ${RUNAI_CLI_URI} \
-	&& chmod +x runai \
-	&& mv runai /usr/local/bin/runai
-
 USER ${NON_ROOT_USER}
 WORKDIR ${HOME_DIR}
 
