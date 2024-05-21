@@ -5,6 +5,8 @@ artefact_bucket_name = ""
 gcp_project_id = ""
 pvc_name = ""
 
+node_selector_key = ""
+node_selector_value = ""
 
 coder_auth = "oidc"
 oidc_issuer_url = ""

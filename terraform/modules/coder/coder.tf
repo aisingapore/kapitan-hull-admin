@@ -111,9 +111,10 @@ resource "helm_release" "coder-server" {
 		type = "string"
 	}
 
-	set {
-		name = "coder.nodeSelector.node-role\\.kubernetes\\.io/runai-cpu-worker"
-    	value = ""
+	dynamic "set" {
+		for_each = var.node_selector_key != "" ? [var.node_selector_key, var.node_selector_value] : []
+		name = format("coder.nodeSelector.%s", set.value[0])
+    	value = set.value[1]
 		type = "string"
 	}
 	

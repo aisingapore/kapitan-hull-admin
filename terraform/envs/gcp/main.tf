@@ -71,6 +71,8 @@ module "coder-server" {
 	kubeconfig			 = var.kubeconfig
 	namespace			 = var.namespace
 	coder_url			 = format("coder.%s", var.root_url)
+	node_selector_key    = var.node_selector_key
+	node_selector_value  = var.node_selector_value
 	auth_method			 = var.coder_auth
 	oidc_issuer_url		 = var.coder_auth == "oidc" ? var.oidc_issuer_url : null
 	oidc_email_domain	 = var.coder_auth == "oidc" ? var.oidc_email_domain : null
