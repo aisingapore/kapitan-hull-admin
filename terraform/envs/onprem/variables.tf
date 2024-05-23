@@ -40,6 +40,18 @@ variable "ecs_secret_key" {
 	default		= ""
 }
 
+variable "node_selector_key" {
+	type 		= string
+	description = "Key for node selector, required if GPU nodes present"
+	default     = ""
+}
+
+variable "node_selector_value" {
+	type 		= string
+	description = "Value for node selector, required if GPU nodes present"
+	default     = ""
+}
+
 variable "coder_auth" {
 	type		= string
 	description = "Authentication methods for Coder server, either 'oidc' or 'password'"

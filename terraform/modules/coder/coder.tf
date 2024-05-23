@@ -43,12 +43,15 @@ resource "helm_release" "coder-postgres-database" {
 		type  = "string"
 	}
 
-	set {
-		name = "primary.nodeSelector.node-role\\.kubernetes\\.io/runai-cpu-worker"
-    	value = ""
-		type = "string"
+	dynamic "set" {
+		for_each = var.node_selector_key != "" ? [[var.node_selector_key, var.node_selector_value]] : []
+		content {
+			name = format("primary.nodeSelector.%s", set.value[0])
+			value = set.value[1]
+			type = "string"
+		}
 	}
-
+	
 	set {
 		name = "image.pullPolicy"
 		value = "Always"
@@ -111,10 +114,13 @@ resource "helm_release" "coder-server" {
 		type = "string"
 	}
 
-	set {
-		name = "coder.nodeSelector.node-role\\.kubernetes\\.io/runai-cpu-worker"
-    	value = ""
-		type = "string"
+	dynamic "set" {
+		for_each = var.node_selector_key != "" ? [[var.node_selector_key, var.node_selector_value]] : []
+		content {
+			name = format("coder.nodeSelector.%s", set.value[0])
+			value = set.value[1]
+			type = "string"
+		}
 	}
 	
 	dynamic "set" {
@@ -184,6 +190,24 @@ resource "helm_release" "coder-server" {
 		for_each = var.auth_method == "oidc" ? [var.oidc_client_secret] : []
 		content {
 			name  = "coder.env[6].value"
+			value = set.value
+			type  = "string"
+		}
+	}
+
+	dynamic "set" {
+		for_each = var.auth_method == "oidc" ? ["CODER_OIDC_ALLOW_SIGNUPS"] : []
+		content {
+			name  = "coder.env[7].name"
+			value = set.value
+			type  = "string"
+		}
+	}
+
+	dynamic "set" {
+		for_each = var.auth_method == "oidc" ? ["false"] : []
+		content {
+			name  = "coder.env[7].value"
 			value = set.value
 			type  = "string"
 		}
