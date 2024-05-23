@@ -43,12 +43,15 @@ resource "helm_release" "coder-postgres-database" {
 		type  = "string"
 	}
 
-	set {
-		name = "primary.nodeSelector.node-role\\.kubernetes\\.io/runai-cpu-worker"
-    	value = ""
-		type = "string"
+	dynamic "set" {
+		for_each = var.node_selector_key != "" ? [[var.node_selector_key, var.node_selector_value]] : []
+		content {
+			name = format("primary.nodeSelector.%s", set.value[0])
+			value = set.value[1]
+			type = "string"
+		}
 	}
-
+	
 	set {
 		name = "image.pullPolicy"
 		value = "Always"
@@ -112,10 +115,12 @@ resource "helm_release" "coder-server" {
 	}
 
 	dynamic "set" {
-		for_each = var.node_selector_key != "" ? [var.node_selector_key, var.node_selector_value] : []
-		name = format("coder.nodeSelector.%s", set.value[0])
-    	value = set.value[1]
-		type = "string"
+		for_each = var.node_selector_key != "" ? [[var.node_selector_key, var.node_selector_value]] : []
+		content {
+			name = format("coder.nodeSelector.%s", set.value[0])
+			value = set.value[1]
+			type = "string"
+		}
 	}
 	
 	dynamic "set" {

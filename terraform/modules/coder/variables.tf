@@ -25,6 +25,18 @@ variable "coder_url" {
 	description = "URL of the Coder Server"
 }
 
+variable "node_selector_key" {
+	type 		= string
+	description = "Key for node selector, required if GPU nodes present"
+	default     = ""
+}
+
+variable "node_selector_value" {
+	type 		= string
+	description = "Value for node selector, required if GPU nodes present"
+	default     = ""
+}
+
 variable "auth_method" {
 	type		= string
 	description = "Authentication method for the Coder server; either 'oidc' or 'password'"

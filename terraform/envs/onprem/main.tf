@@ -66,6 +66,8 @@ module "mlflow-server" {
 	kubeconfig			 = var.kubeconfig
 	ingress_hostname     = format("mlflow-%s", var.root_url)
 	gcp_project_id		 = null
+	node_selector_key    = var.node_selector_key
+	node_selector_value  = var.node_selector_value
 }
 
 module "coder-server" {

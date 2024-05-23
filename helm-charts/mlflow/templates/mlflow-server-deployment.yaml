@@ -88,7 +88,7 @@ spec:
               value: {{ .Values.config.artefactBackend | upper }}
             {{- if eq .Values.config.artefactBackend "ecs" }}
             - name: ARTIFACT_URL
-              value: {{ printf "/%s/mlflow/mlflow-tracking-server" .Values.config.bucketName  }}
+              value: {{ printf "s3://%s/mlflow/mlflow-tracking-server" .Values.config.bucketName  }}
             - name: MLFLOW_S3_ENDPOINT_URL
               value: {{ .Values.ecs.endpointURL }}
             - name: AWS_ACCESS_KEY_ID

@@ -64,10 +64,13 @@ resource "helm_release" "mlflow-server" {
 		type  = "string"
 	}
 
-	set {
-		name = "nodeSelector.node-role\\.kubernetes\\.io/runai-cpu-worker"
-    	value = ""
-		type = "string"
+	dynamic "set" {
+		for_each = var.node_selector_key != "" ? [[var.node_selector_key, var.node_selector_value]] : []
+		content {
+			name = format("nodeSelector.%s", set.value[0])
+			value = set.value[1]
+			type = "string"
+		}
 	}
 	
 	dynamic "set" {
