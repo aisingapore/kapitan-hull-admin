@@ -1,6 +1,6 @@
-FROM python:3.10-slim-bullseye
+FROM python:3.12-slim-bookworm
 
-LABEL version='1.0'
+LABEL version='2.13.0-python-3.12-gcs-2.16.0-boto-1.34.112'
 LABEL decription='MLflow Server with basic auth and aws/gcp artefact storage'
 LABEL author='Deon Chia'
 
@@ -29,8 +29,13 @@ RUN groupadd -g ${GID} ${GROUP} \
 USER ${USER}
 WORKDIR /home/${USER}
 
-ARG MLFLOW_VER="2.11.1"
-RUN pip3 -qq install mlflow==${MLFLOW_VER} google-cloud-storage boto3
+ARG MLFLOW_VER="2.13.0"
+ARG GCS_VER="2.16.0"
+ARG BOTO_VER="1.34.112"
+RUN pip3 -qq install \
+	mlflow==${MLFLOW_VER} \
+	google-cloud-storage==${GCS_VER} \
+	boto3==${BOTO_VER}
 ENV PATH="/home/$USER/.local/bin:$PATH"
 
 RUN mkdir scripts/
