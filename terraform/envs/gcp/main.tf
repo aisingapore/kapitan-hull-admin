@@ -3,7 +3,7 @@ terraform {
 }
 
 locals {
-	gar_mlflow_repo	   = "asia-southeast1-docker.pkg.dev/machine-learning-ops/mlflow-server/v2/mlflow:latest"
+	gar_mlflow_repo	   = "asia-southeast1-docker.pkg.dev/machine-learning-ops/pub-images/mlflow-server:stable"
 }
 
 provider "kubernetes" {
