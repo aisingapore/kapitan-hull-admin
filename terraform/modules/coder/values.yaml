@@ -5,6 +5,7 @@ coder:
     enable: "true"
     className: nginx
     host: ""
+    wildcardHost: ""
   env:
     - name: CODER_TELEMETRY_ENABLE
       value: "false"
@@ -14,4 +15,6 @@ coder:
           name: coder-db-url
           key: url
     - name: CODER_ACCESS_URL
+      value: ""
+    - name: CODER_WILDCARD_ACCESS_URL
       value: ""

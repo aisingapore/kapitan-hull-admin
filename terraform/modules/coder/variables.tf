@@ -7,7 +7,7 @@ variable "coder_image" {
 variable "coder_image_tag" {
 	type		= string
 	description = "Image tag for Coder"
-	default		= "v2.10.3"
+	default		= "v2.11.2"
 }
 
 variable "kubeconfig" {
