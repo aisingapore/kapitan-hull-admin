@@ -12,8 +12,11 @@ terraform {
 locals {
   namespace             = "runai-proj"
   common_pvc_name       = "proj-pvc"
-  codeserver_image_repo = "registry.aisingapore.net/mlops-pub/code-server:v4.20.0"
+  codeserver_image_repo = "registry.aisingapore.net/mlops-pub/code-server:v4.89.1-2"
   common_pvc_path       = "/proj-pvc"
+  # Uncomment the node_selector block in main.spec.template.spec if it is to be used
+  node_selector_key     = ""
+  node_selector_value   = ""
 }
 
 provider "coder" {
@@ -91,7 +94,7 @@ resource "coder_agent" "main" {
   arch                   = "amd64"
   startup_script         =<<-EOT
     #!/bin/bash
-    set -e
+    set -e    
 
     if [[ ! -f /home/coder/.bashrc ]]; then
       echo "Unable to find user profile in home directory, initialising home directory..."
@@ -99,7 +102,21 @@ resource "coder_agent" "main" {
       sudo chown coder:coder -R /home/coder/
       /miniconda3/bin/conda init bash
     fi
-    echo 'export PATH=${local.common_pvc_path}/utils:$PATH' >> /home/coder/.bashrc
+
+    if ! grep -q 'export PATH=${local.common_pvc_path}/utils:$PATH' "/home/coder/.bashrc"; then
+      echo "Unable to find PATH import in user profile, appending PATH..."
+      echo 'export PATH=${local.common_pvc_path}/utils:$PATH' >> /home/coder/.bashrc
+    fi
+
+    if ! grep -q 'export PIP_CACHE_DIR=${local.common_pvc_path}/.pip/cache' "/home/coder/.bashrc"; then
+      echo "Unable to find PIP_CACHE_DIR in user profile, appending env var..."
+      echo 'export PIP_CACHE_DIR=${local.common_pvc_path}/.pip/cache' >> /home/coder/.bashrc
+    fi
+
+    if ! grep -q 'export HF_DATASETS_CACHE=${local.common_pvc_path}/.huggingface/datasets' "/home/coder/.bashrc"; then
+      echo "Unable to find HF_DATASETS_CACHE in user profile, appending env var..."
+      echo 'export HF_DATASETS_CACHE=${local.common_pvc_path}/.huggingface/datasets' >> /home/coder/.bashrc
+    fi
 
     if [[ ! -d /home/coder/.runai_config ]]; then
       echo "Unable to find runai configuration in home directory, initialising runai configuration file..."
@@ -230,7 +247,7 @@ resource "kubernetes_persistent_volume_claim" "home" {
     access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
-        storage = "1Gi"
+        storage = "8Gi"
       }
     }
   }
@@ -241,6 +258,9 @@ resource "kubernetes_persistent_volume_claim" "home" {
 
 resource "kubernetes_deployment" "main" {
   count = data.coder_workspace.me.start_count
+  depends_on = [
+    kubernetes_persistent_volume_claim.home
+  ]
   wait_for_rollout = false
   metadata {
     name      = "coder-${lower(data.coder_workspace.me.owner)}-${lower(data.coder_workspace.me.name)}"
@@ -283,6 +303,9 @@ resource "kubernetes_deployment" "main" {
           run_as_user = 2222
           fs_group    = 2222
         }
+        #node_selector = {
+        #  (local.node_selector_key) = local.node_selector_value
+        #}
         init_container {
           name             = "runai-init"
           image            = "busybox:1.27"

@@ -10,10 +10,13 @@ terraform {
 }
 
 locals {
-  namespace				= ""
-  common_pvc_name		= ""
-  codeserver_image_repo = ""
-  common_pvc_path		= ""
+  namespace				      = "runai-proj"
+  common_pvc_name		    = "proj-pvc"
+  codeserver_image_repo = "asia-southeast1-docker.pkg.dev/machine-learning-ops/pub-images/code-server:v4.89.1-2"
+  common_pvc_path		    = "/proj-pvc"
+  # Uncomment the node_selector block in main.spec.template.spec if it is to be used
+  node_selector_key     = ""
+  node_selector_value   = ""
 }
 
 provider "coder" {
@@ -101,6 +104,21 @@ resource "coder_agent" "main" {
       /miniconda3/bin/conda init bash
     fi
 
+    if [[ ! grep -q 'export PATH=${local.common_pvc_path}/utils:$PATH' "/home/coder/.bashrc" ]]; then
+      echo "Unable to find PATH import in user profile, appending PATH..."
+      echo 'export PATH=${local.common_pvc_path}/utils:$PATH' >> /home/coder/.bashrc
+    fi
+
+    if [[ ! grep -q 'export PIP_CACHE_DIR=${local.common_pvc_path}/.pip/cache' "/home/coder/.bashrc" ]]; then
+      echo "Unable to find PIP_CACHE_DIR in user profile, appending env var..."
+      echo 'export PIP_CACHE_DIR=${local.common_pvc_path}/.pip/cache' >> /home/coder/.bashrc
+    fi
+
+    if [[ ! grep -q 'export HF_DATASETS_CACHE=${local.common_pvc_path}/.huggingface/datasets' "/home/coder/.bashrc" ]]; then
+      echo "Unable to find HF_DATASETS_CACHE in user profile, appending env var..."
+      echo 'export HF_DATASETS_CACHE=${local.common_pvc_path}/.huggingface/datasets' >> /home/coder/.bashrc
+    fi
+
     if [[ ! -d /home/coder/.runai_config ]]; then
       echo "Unable to find runai configuration in home directory, initialising runai configuration file..."
       mkdir -p /home/coder/.runai_config
@@ -110,8 +128,8 @@ resource "coder_agent" "main" {
 
     if [[ ! -f /home/coder/.condarc ]]; then
       echo "Unable to find conda configuration in home directory, initialising conda configuration file..."
-      /miniconda3/bin/conda config --append pkgs_dirs /pvc-data/.conda/pkgs/
-      /miniconda3/bin/conda config --append envs_dirs /pvc-data/.conda/envs/
+      /miniconda3/bin/conda config --append pkgs_dirs ${local.common_pvc_path}/.conda/pkgs/
+      /miniconda3/bin/conda config --append envs_dirs ${local.common_pvc_path}/.conda/envs/
       /miniconda3/bin/conda config --set env_prompt '({name})'
     fi
     
@@ -202,7 +220,7 @@ resource "coder_app" "code-server" {
 
 resource "kubernetes_persistent_volume_claim" "home" {
   metadata {
-    name      = "coder-${lower(data.coder_workspace.me.name)}-home"
+    name      = "coder-${lower(data.coder_workspace.me.name)}"
     namespace = local.namespace
     labels = {
       "app.kubernetes.io/name"     = "coder-user-pvc"
@@ -224,7 +242,7 @@ resource "kubernetes_persistent_volume_claim" "home" {
     access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
-        storage = "1Gi"
+        storage = "8Gi"
       }
     }
   }
@@ -277,9 +295,12 @@ resource "kubernetes_deployment" "main" {
       }
       spec {
         security_context {
-          run_as_user = 1000
-          fs_group    = 1000
+          run_as_user = 2222
+          fs_group    = 2222
         }
+        #node_selector = {
+        #  (local.node_selector_key) = local.node_selector_value
+        #}
         init_container {
           name             = "runai-init"
           image            = "busybox:1.27"
@@ -299,7 +320,7 @@ resource "kubernetes_deployment" "main" {
           image_pull_policy = "Always"
           command           = ["bash", "-c", coder_agent.main.init_script]
           security_context {
-            run_as_user = "1000"
+            run_as_user = "2222"
           }
           env {
             name  = "CODER_AGENT_TOKEN"

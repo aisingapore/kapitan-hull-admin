@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 # system specification arguments
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -13,6 +13,9 @@ ARG NON_ROOT_GID="2222"
 ARG HOME_DIR="/home/${NON_ROOT_USER}"
 ARG CONDA_HOME="/miniconda3"
 
+# version arguments
+ARG CODE_VER="4.89.1"
+ARG CONDA_VER="py312_24.4.0-0"
 
 RUN apt-get -qqq update \
 	&& apt-get install -y -qqq --no-install-recommends \
@@ -31,7 +34,8 @@ RUN apt-get -qqq update \
 	apt-transport-https \
 	ca-certificates \
 	gnupg \
-	sudo
+	sudo \
+	openssh-server
 
 # Manually set Locale to $LOCALE_LANG
 RUN sed -i "s/# ${LOCALE_LANG}/${LOCALE_LANG}/" /etc/locale.gen \
@@ -65,14 +69,12 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-${SYS_OS}-${SYS_ARCH}.zip" \
 	&& rm -r awscliv2.zip aws
 
 # Install code-server
-ARG CODE_VER="4.22.0"
 ARG CODE_BIN="code-server_${CODE_VER}_amd64.deb"
 RUN curl -fsOL "https://github.com/coder/code-server/releases/download/v${CODE_VER}/${CODE_BIN}" \
 	&& dpkg -i "${CODE_BIN}" \
 	&& rm "${CODE_BIN}"
 
 # Miniconda arguments
-ARG CONDA_VER="py311_24.1.2-0"
 ARG MINICONDA_SH="Miniconda3-${CONDA_VER}-Linux-${SYS_ARCH}.sh"
 
 RUN curl -fO "https://repo.anaconda.com/miniconda/${MINICONDA_SH}" \
