@@ -13,7 +13,7 @@ To build the image, run:
 ```bash
 $ docker build \
     -t mlflow-server \
-    --build-arg MLFLOW_VER=2.8.1 .
+    --build-arg MLFLOW_VER=2.13.0 .
 ```
 
 > Note that the `MLFLOW_VER` argument must be specified for a successful 
@@ -59,17 +59,17 @@ values for MLflow.
 The following are additional environment variables that can be passed 
 to the image for further customisation. 
 
-| Variable Name | Details |
-| --- | --- | 
-| `ARTIFACT_BACKEND` | The backend artifact storage choice. [`ECS`, `GCS`] |
-| `ARTIFACT_URL` | Custom path to MLflow artifact storage | 
-| `AUTH_USERNAME` | Default Admin username for MLflow, if authentication is enabled |
-| `AUTH_PASSWORD` | Default Admin password for MLflow, if authentication is enabled |
-| `AUTH_DATABASE_URL` | Custom path to storage authentication database, if authentication is enabled |
-| `AWS_ACCESS_KEY_ID` | The access key ID for S3 |
-| `AWS_SECRET_ACCESS_KEY` | Secret key for S3 |
-| `DATABASE_URI` | Custom path to MLflow tracking server's database |
-| `GOOGLE_APPLICATION_CREDENTIALS` | Credentials for accessing GCS |
+| Variable Name                    | Details                                                                      |
+| -------------------------------- | ---------------------------------------------------------------------------- | 
+| `ARTIFACT_BACKEND`               | The backend artifact storage choice. [`ECS`, `GCS`]                          |
+| `ARTIFACT_URL`                   | Custom path to MLflow artifact storage                                       | 
+| `AUTH_USERNAME`                  | Default Admin username for MLflow, if authentication is enabled              |
+| `AUTH_PASSWORD`                  | Default Admin password for MLflow, if authentication is enabled              |
+| `AUTH_DATABASE_URL`              | Custom path to storage authentication database, if authentication is enabled |
+| `AWS_ACCESS_KEY_ID`              | The access key ID for S3                                                     |
+| `AWS_SECRET_ACCESS_KEY`          | Secret key for S3                                                            |
+| `DATABASE_URI`                   | Custom path to MLflow tracking server's database                             |
+| `GOOGLE_APPLICATION_CREDENTIALS` | Credentials for accessing GCS                                                |
 
 ## Image Behavior
 
@@ -119,7 +119,7 @@ and `password` respectively; the authentication database will be located at
 
 To configure the default values, the corresponding
 values are to be changed within the `.ini` file at
-`$PWD/.local/lib/python3.10/site-packages/mlflow/server/auth/basic_auth.ini`.
+`$PWD/.local/lib/python3.12/site-packages/mlflow/server/auth/basic_auth.ini`.
 For more information, refer to [MLflow's authentication documentation.](https://mlflow.org/docs/latest/auth/index.html)
 
 ## Default Values

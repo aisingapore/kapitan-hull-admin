@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mlflow_config="$PWD/.local/lib/python3.10/site-packages/mlflow/server/auth/basic_auth.ini"
+mlflow_config="$PWD/.local/lib/python3.12/site-packages/mlflow/server/auth/basic_auth.ini"
 
 case $ARTIFACT_BACKEND in
 

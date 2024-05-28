@@ -97,6 +97,17 @@ resource "helm_release" "coder-server" {
 	}
 
 	set {
+		name  = "coder.ingress.wildcardHost"
+		value = format("*-%s", var.coder_url)
+		type  = "string"
+	}
+
+	set {
+		name  = "coder.env[3].value"
+		value = format("*-%s", var.coder_url)
+	}
+
+	set {
 		name  = "coder.image.repo"
 		value = var.coder_image
 		type  = "string"
@@ -126,7 +137,7 @@ resource "helm_release" "coder-server" {
 	dynamic "set" {
 		for_each = var.auth_method == "oidc" ? ["CODER_OIDC_ISSUER_URL"] : []
 		content {
-			name  = "coder.env[3].name"
+			name  = "coder.env[4].name"
 			value = set.value
 			type  = "string"
 		}
@@ -135,7 +146,7 @@ resource "helm_release" "coder-server" {
 	dynamic "set" {
 		for_each = var.auth_method == "oidc" ? [var.oidc_issuer_url] : []
 		content {
-			name  = "coder.env[3].value"
+			name  = "coder.env[4].value"
 			value = set.value
 			type  = "string"
 		}
@@ -144,7 +155,7 @@ resource "helm_release" "coder-server" {
 	dynamic "set" {
 		for_each = var.auth_method == "oidc" ? ["CODER_OIDC_EMAIL_DOMAIN"] : []
 		content {
-			name  = "coder.env[4].name"
+			name  = "coder.env[5].name"
 			value = set.value
 			type  = "string"
 		}
@@ -153,7 +164,7 @@ resource "helm_release" "coder-server" {
 	dynamic "set" {
 		for_each = var.auth_method == "oidc" ? [var.oidc_email_domain] : []
 		content {
-			name  = "coder.env[4].value"
+			name  = "coder.env[5].value"
 			value = set.value
 			type  = "string"
 		}
@@ -162,7 +173,7 @@ resource "helm_release" "coder-server" {
 	dynamic "set" {
 		for_each = var.auth_method == "oidc" ? ["CODER_OIDC_CLIENT_ID"] : []
 		content {
-			name  = "coder.env[5].name"
+			name  = "coder.env[6].name"
 			value = set.value
 			type  = "string"
 		}
@@ -171,7 +182,7 @@ resource "helm_release" "coder-server" {
 	dynamic "set" {
 		for_each = var.auth_method == "oidc" ? [var.oidc_client_id] : []
 		content {
-			name  = "coder.env[5].value"
+			name  = "coder.env[6].value"
 			value = set.value
 			type  = "string"
 		}
@@ -180,7 +191,7 @@ resource "helm_release" "coder-server" {
 	dynamic "set" {
 		for_each = var.auth_method == "oidc" ? ["CODER_OIDC_CLIENT_SECRET"] : []
 		content {
-			name  = "coder.env[6].name"
+			name  = "coder.env[7].name"
 			value = set.value
 			type  = "string"
 		}
@@ -189,7 +200,7 @@ resource "helm_release" "coder-server" {
 	dynamic "set" {
 		for_each = var.auth_method == "oidc" ? [var.oidc_client_secret] : []
 		content {
-			name  = "coder.env[6].value"
+			name  = "coder.env[7].value"
 			value = set.value
 			type  = "string"
 		}
@@ -198,7 +209,7 @@ resource "helm_release" "coder-server" {
 	dynamic "set" {
 		for_each = var.auth_method == "oidc" ? ["CODER_OIDC_ALLOW_SIGNUPS"] : []
 		content {
-			name  = "coder.env[7].name"
+			name  = "coder.env[8].name"
 			value = set.value
 			type  = "string"
 		}
@@ -207,7 +218,7 @@ resource "helm_release" "coder-server" {
 	dynamic "set" {
 		for_each = var.auth_method == "oidc" ? ["false"] : []
 		content {
-			name  = "coder.env[7].value"
+			name  = "coder.env[8].value"
 			value = set.value
 			type  = "string"
 		}
