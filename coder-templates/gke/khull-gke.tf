@@ -92,7 +92,6 @@ data "coder_workspace" "me" {}
 resource "coder_agent" "main" {
   os                     = "linux"
   arch                   = "amd64"
-  startup_script_timeout = 120
   startup_script         =<<-EOT
     #!/bin/bash
     set -e
@@ -104,17 +103,17 @@ resource "coder_agent" "main" {
       /miniconda3/bin/conda init bash
     fi
 
-    if [[ ! grep -q 'export PATH=${local.common_pvc_path}/utils:$PATH' "/home/coder/.bashrc" ]]; then
+    if ! grep -q 'export PATH=${local.common_pvc_path}/utils:$PATH' "/home/coder/.bashrc"; then
       echo "Unable to find PATH import in user profile, appending PATH..."
       echo 'export PATH=${local.common_pvc_path}/utils:$PATH' >> /home/coder/.bashrc
     fi
 
-    if [[ ! grep -q 'export PIP_CACHE_DIR=${local.common_pvc_path}/.pip/cache' "/home/coder/.bashrc" ]]; then
+    if ! grep -q 'export PIP_CACHE_DIR=${local.common_pvc_path}/.pip/cache' "/home/coder/.bashrc"; then
       echo "Unable to find PIP_CACHE_DIR in user profile, appending env var..."
       echo 'export PIP_CACHE_DIR=${local.common_pvc_path}/.pip/cache' >> /home/coder/.bashrc
     fi
 
-    if [[ ! grep -q 'export HF_DATASETS_CACHE=${local.common_pvc_path}/.huggingface/datasets' "/home/coder/.bashrc" ]]; then
+    if ! grep -q 'export HF_DATASETS_CACHE=${local.common_pvc_path}/.huggingface/datasets' "/home/coder/.bashrc"; then
       echo "Unable to find HF_DATASETS_CACHE in user profile, appending env var..."
       echo 'export HF_DATASETS_CACHE=${local.common_pvc_path}/.huggingface/datasets' >> /home/coder/.bashrc
     fi
