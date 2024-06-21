@@ -34,12 +34,11 @@ the default images resides in publically availabe image repositories.
 
 ## How To Use
 
-1) Navigate to the appropriate subdirectory in the `envs/` subdirectory according 
-to the target environment
+1) Navigate to the appropriate subdirectory in the `envs/` subdirectory according to the target environment
 ```bash
 $ cd envs/{target_env}
 ```
-2) Populate the `config.gcs.tfbackend` file for the GCS bucket and prefix path
+2) Populate the `config.gcs.tfbackend` file for the GCS bucket and prefix path. Please refer to [this section](#gcs-backend) for more information
 3) Export the path to the Google SA credential file as `GOOGLE_APPLICATION_CREDENTIALS`
 
 ```bash
@@ -52,14 +51,14 @@ $ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/the/credential/file
 envs/{target_env} $ terraform init -backend-config='./config.gcs.tfbackend'
 ```
 
-4) Populate the required fields in the `gcp.tfvars/onprem.tfvars`
+4) Populate the required fields in the `gcp.tfvar` or `onprem.tfvars`
 5) Plan and inspect the infrastructure that is to be deployed
 > Please include an additional `-var gcs_credentials='LOCAL_PATH_TO_GCS_SA_FILE'`
 if deploying to GKE.
 
 ```bash
 envs/{target_env} $ terraform plan \
--var-file='./{target_env}.tfvars \
+-var-file='./{target_env}.tfvars' \
 -var kubeconfig='LOCAL_LOCATION_OF_CLUSTER_KUBECONFIG_FILE' \
 -var runai_kubeconfig='LOCAL_LOCATION_OF_RUNAI_KUBECONFIG_FILE'
 ```
@@ -70,7 +69,7 @@ if deploying to GKE.
 
 ```bash
 envs/{target_env} $ terraform apply \
--var-file='./{target_env}.tfvars \
+-var-file='./{target_env}.tfvars' \
 -var kubeconfig='LOCAL_LOCATION_OF_CLUSTER_KUBECONFIG_FILE' \
 -var runai_kubeconfig='LOCAL_LOCATION_OF_RUNAI_KUBECONFIG_FILE'
 ```
