@@ -286,7 +286,7 @@ resource "kubernetes_deployment" "main" {
     replicas = 1
     selector {
       match_labels = {
-        "app.kubernetes.io/name" = "coder-workspace"
+        "app.kubernetes.io/name" = "coder-workspace-${lower(data.coder_workspace_owner.user.name)}-${lower(data.coder_workspace.me.name)}"
       }
     }
     strategy {
@@ -296,7 +296,7 @@ resource "kubernetes_deployment" "main" {
     template {
       metadata {
         labels = {
-          "app.kubernetes.io/name" = "coder-workspace"
+          "app.kubernetes.io/name" = "coder-workspace-${lower(data.coder_workspace_owner.user.name)}-${lower(data.coder_workspace.me.name)}"
         }
       }
       spec {
