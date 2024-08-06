@@ -43,6 +43,17 @@ resource "helm_release" "coder-postgres-database" {
     type  = "string"
   }
 
+  set {
+    name  = "resource.limits.cpu"
+    value = "1"
+    type  = "string"
+  }
+  set {
+    name  = "resources.limits.memory"
+    value = "1Gi"
+    type  = "string"
+  }
+
   dynamic "set" {
     for_each = var.node_selector_key != "" ? [[var.node_selector_key, var.node_selector_value]] : []
     content {
