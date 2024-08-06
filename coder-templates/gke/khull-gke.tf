@@ -297,6 +297,7 @@ resource "kubernetes_deployment" "main" {
         security_context {
           run_as_user = 2222
           fs_group    = 2222
+          fs_group_change_policy = "OnRootMismatch"
         }
         #node_selector = {
         #  (local.node_selector_key) = local.node_selector_value
