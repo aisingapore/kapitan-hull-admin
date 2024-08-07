@@ -8,9 +8,9 @@ variable "root_url" {
   description = "Root URL for Mlflow and Coder servers, without the resource header. e.g. 100e-exampleproj.aisingapore.net"
 }
 
-variable "artefact_bucket_name" {
+variable "artifact_bucket_name" {
   type        = string
-  description = "Bucket name where artefacts will be stored"
+  description = "Bucket name where artifacts will be stored"
 }
 
 variable "gcp_project_id" {

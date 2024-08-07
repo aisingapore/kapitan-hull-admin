@@ -18,9 +18,9 @@ variable "backend_storage" {
   }
 }
 
-variable "artefact_bucket_name" {
+variable "artifact_bucket_name" {
   type        = string
-  description = "Name of the bucket where artefacts will be stored to"
+  description = "Name of the bucket where artifacts will be stored to"
 }
 
 variable "pvc_name" {

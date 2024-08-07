@@ -5,22 +5,22 @@ mlflow_config="$PWD/.local/lib/python3.12/site-packages/mlflow/server/auth/basic
 case $ARTIFACT_BACKEND in
     ECS)
         if [[ -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" || -z "$MLFLOW_S3_ENDPOINT_URL" ]]; then 
-            echo "Artefact backend set to $ARTIFACT_BACKEND, but the necessary S3 credentials are not found."
+            echo "Artifact backend set to $ARTIFACT_BACKEND, but the necessary S3 credentials are not found."
             exit 1
         fi
-        echo 'Setting up artefact server in ECS S3.'
+        echo 'Setting up artifact server in ECS S3.'
         unset GOOGLE_APPLICATION_CREDENTIALS;;
     GCS)
         if [[ -z "$GOOGLE_APPLICATION_CREDENTIALS" ]]; then
-            echo "Artefact backend set to $ARTIFACT_BACKEND, but the necessary GCS credentials are not found."
+            echo "Artifact backend set to $ARTIFACT_BACKEND, but the necessary GCS credentials are not found."
             exit 1
         fi
-        echo 'Setting up artefact server in Google Cloud Storage.'
+        echo 'Setting up artifact server in Google Cloud Storage.'
         unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY;;
     "")
-        echo 'Artefact backend is not set. Defaulting to local filesystem.';;
+        echo 'Artifact backend is not set. Defaulting to local filesystem.';;
     *)
-        echo 'Unknown artefact backend given. Defaulting to local filesystem.';;
+        echo 'Unknown artifact backend given. Defaulting to local filesystem.';;
 esac
 
 if [[ -n "$AUTH_USERNAME" && -n "$AUTH_PASSWORD" && -n "$AUTH_DATABASE_URL" ]]; then

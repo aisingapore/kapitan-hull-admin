@@ -59,7 +59,7 @@ resource "kubernetes_persistent_volume_claim" "pvc-data-onprem" {
 module "mlflow-server" {
   source               = "../../modules/mlflow/"
   backend_storage      = "ecs"
-  artefact_bucket_name = var.artefact_bucket_name
+  artifact_bucket_name = var.artifact_bucket_name
   namespace            = var.namespace
   pvc_name             = var.pvc_name
   custom_image         = local.harbor_mlflow_repo

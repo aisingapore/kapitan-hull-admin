@@ -3,8 +3,8 @@ config:
   authSecretName: "mlflow-admin-credentials"
   # -- Enable/Disable backup jobs for database file.
   backupJob: true
-  # -- Define which backend to use to store MLflow artefact, [ecs, gcs].
-  artefactBackend: ecs
+  # -- Define which backend to use to store MLflow artifact, [ecs, gcs].
+  artifactBackend: ecs
   # -- Name of bucket that the artifacts and tracking server will write to.
   bucketName: 100e-proj
   database:

@@ -32,14 +32,14 @@ resource "helm_release" "mlflow-server" {
   namespace = var.namespace
 
   set {
-    name  = "config.artefactBackend"
+    name  = "config.artifactBackend"
     value = var.backend_storage
     type  = "string"
   }
 
   set {
     name  = "config.bucketName"
-    value = var.artefact_bucket_name
+    value = var.artifact_bucket_name
     type  = "string"
   }
 
