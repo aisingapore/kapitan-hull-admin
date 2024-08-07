@@ -12,7 +12,7 @@ terraform {
 locals {
   namespace             = "runai-proj"
   common_pvc_name       = "proj-pvc"
-  codeserver_image_repo = "asia-southeast1-docker.pkg.dev/machine-learning-ops/pub-images/code-server:v4.89.1-2"
+  codeserver_image_repo = "asia-southeast1-docker.pkg.dev/machine-learning-ops/pub-images/code-server:v4.91.1"
   common_pvc_path       = "/proj-pvc"
   # Uncomment the node_selector block in main.spec.template.spec if it is to be used
   # node_selector_key     = ""
@@ -91,9 +91,9 @@ data "coder_workspace" "me" {}
 data "coder_workspace_owner" "user" {}
 
 resource "coder_agent" "main" {
-  os                     = "linux"
-  arch                   = "amd64"
-  startup_script         =<<-EOT
+  os             = "linux"
+  arch           = "amd64"
+  startup_script =<<-EOT
     #!/bin/bash
     set -e
 
@@ -304,7 +304,7 @@ resource "kubernetes_deployment" "main" {
         #}
         init_container {
           name    = "runai-init"
-          image   = "busybox:1.27"
+          image   = "busybox:1.36"
           command = ["/bin/sh", "-c", "cp /secrets/runai-sso.yaml /etc/runai/runai-sso.yaml && chmod 0766 /etc/runai/runai-sso.yaml"]
           volume_mount {
             mount_path = "/secrets"
@@ -419,4 +419,3 @@ resource "kubernetes_deployment" "main" {
     }
   }
 }
-
