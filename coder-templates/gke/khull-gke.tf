@@ -10,10 +10,10 @@ terraform {
 }
 
 locals {
-  namespace				      = "runai-proj"
-  common_pvc_name		    = "proj-pvc"
+  namespace             = "runai-proj"
+  common_pvc_name       = "proj-pvc"
   codeserver_image_repo = "asia-southeast1-docker.pkg.dev/machine-learning-ops/pub-images/code-server:v4.89.1-2"
-  common_pvc_path		    = "/proj-pvc"
+  common_pvc_path       = "/proj-pvc"
   # Uncomment the node_selector block in main.spec.template.spec if it is to be used
   # node_selector_key     = ""
   # node_selector_value   = ""
@@ -193,11 +193,11 @@ resource "coder_agent" "main" {
     display_name = "Load Average (Host)"
     key          = "6_load_host"
     # get load avg scaled by number of cores
-    script   = <<EOT
+    script       = <<EOT
       echo "`cat /proc/loadavg | awk '{ print $1 }'` `nproc`" | awk '{ printf "%0.2f", $1/$2 }'
     EOT
-    interval = 60
-    timeout  = 1
+    interval     = 60
+    timeout      = 1
   }
 }
 
@@ -227,14 +227,14 @@ resource "kubernetes_persistent_volume_claim" "home" {
       "app.kubernetes.io/instance" = "coder-pvc-${lower(data.coder_workspace.me.name)}"
       "app.kubernetes.io/part-of"  = "coder"
       //Coder-specific labels.
-      "com.coder.resource"       = "true"
-      "com.coder.workspace.id"   = data.coder_workspace.me.id
-      "com.coder.workspace.name" = data.coder_workspace.me.name
-      "com.coder.user.id"        = data.coder_workspace_owner.user.id
-      "com.coder.user.username"  = data.coder_workspace_owner.user.name
+      "com.coder.resource"         = "true"
+      "com.coder.workspace.id"     = data.coder_workspace.me.id
+      "com.coder.workspace.name"   = data.coder_workspace.me.name
+      "com.coder.user.id"          = data.coder_workspace_owner.user.id
+      "com.coder.user.username"    = data.coder_workspace_owner.user.name
     }
     annotations = {
-      "com.coder.user.email" = data.coder_workspace_owner.user.email
+      "com.coder.user.email"       = data.coder_workspace_owner.user.email
     }
   }
   wait_until_bound = false
@@ -271,7 +271,7 @@ resource "kubernetes_deployment" "main" {
       "com.coder.user.username"    = data.coder_workspace_owner.user.name
     }
     annotations = {
-      "com.coder.user.email" = data.coder_workspace_owner.user.email
+      "com.coder.user.email"       = data.coder_workspace_owner.user.email
     }
   }
 
@@ -280,7 +280,7 @@ resource "kubernetes_deployment" "main" {
     replicas = 1
     selector {
       match_labels = {
-        "app.kubernetes.io/name" = "coder-workspace"
+        "app.kubernetes.io/name" = "coder-workspace-${lower(data.coder_workspace_owner.user.name)}-${lower(data.coder_workspace.me.name)}"
       }
     }
     strategy {
@@ -290,28 +290,29 @@ resource "kubernetes_deployment" "main" {
     template {
       metadata {
         labels = {
-          "app.kubernetes.io/name" = "coder-workspace"
+          "app.kubernetes.io/name" = "coder-workspace-${lower(data.coder_workspace_owner.user.name)}-${lower(data.coder_workspace.me.name)}"
         }
       }
       spec {
         security_context {
-          run_as_user = 2222
-          fs_group    = 2222
+          run_as_user            = 2222
+          fs_group               = 2222
+          fs_group_change_policy = "OnRootMismatch"
         }
         #node_selector = {
         #  (local.node_selector_key) = local.node_selector_value
         #}
         init_container {
-          name             = "runai-init"
-          image            = "busybox:1.27"
-          command          = ["/bin/sh", "-c", "cp /secrets/runai-sso.yaml /etc/runai/runai-sso.yaml && chmod 0766 /etc/runai/runai-sso.yaml"]
+          name    = "runai-init"
+          image   = "busybox:1.27"
+          command = ["/bin/sh", "-c", "cp /secrets/runai-sso.yaml /etc/runai/runai-sso.yaml && chmod 0766 /etc/runai/runai-sso.yaml"]
           volume_mount {
-              mount_path = "/secrets"
-              name = "from-secret"
+            mount_path = "/secrets"
+            name       = "from-secret"
           }
           volume_mount {
-              mount_path = "/etc/runai"
-              name = "common-mount"
+            mount_path = "/etc/runai"
+            name       = "common-mount"
           }
         }
         container {
@@ -351,7 +352,7 @@ resource "kubernetes_deployment" "main" {
           }
           volume_mount {
             mount_path = "/etc/runai"
-            name = "common-mount"
+            name       = "common-mount"
           }
           volume_mount {
             mount_path = "/home/coder"
@@ -367,7 +368,7 @@ resource "kubernetes_deployment" "main" {
           name = "workspace"
           persistent_volume_claim {
             claim_name = "${local.common_pvc_name}"
-			read_only  = false
+            read_only  = false
           }
         }
         volume {
@@ -385,17 +386,16 @@ resource "kubernetes_deployment" "main" {
           }
         }
         volume {
-            name = "common-mount"
-            empty_dir {}
-          }
+          name = "common-mount"
+          empty_dir {}
+        }
         volume {
-            name = "from-secret"
-            secret {
-              secret_name = "runai-sso"
-              optional    = false
-            }
+          name = "from-secret"
+          secret {
+            secret_name = "runai-sso"
+            optional    = false
           }
-
+        }
         affinity {
           // This affinity attempts to spread out all workspace pods evenly across
           // nodes.

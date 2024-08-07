@@ -46,8 +46,8 @@ deployment:
   # -- Container name that runs the mlflow-server.
   containerName: mlflow
   # -- Image to pull mlflow-server from.
-  # image: registry.aisingapore.net/mlops-pub/mlflow-server:stable
-  image: asia-southeast1-docker.pkg.dev/machine-learning-ops/mlflow-server/v2/mlflow:stable
+  #image: asia-southeast1-docker.pkg.dev/machine-learning-ops/pub-images/mlflow-server:stable
+  image: registry.aisingapore.net/mlops-pub/mlflow-server:stable
   # -- Arguments to pass to the image.
   args:
     - "-w 2"

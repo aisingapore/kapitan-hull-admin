@@ -12,19 +12,19 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG EN_UTF="en_US.UTF-8"
 
 RUN apt -q update && \
-	apt install -y -qq curl \
-	locales \
-	apt-transport-https \
-	ca-certificates \
-	gnupg \
-	unzip && \
-	rm -rf /var/lib/apt/lists/*
+    apt install -y -qq curl \
+    locales \
+    apt-transport-https \
+    ca-certificates \
+    gnupg \
+    unzip && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN sed -i "s/# $EN_UTF/$EN_UTF/" /etc/locale.gen \
-	&& locale-gen
+    && locale-gen
 ENV LANG=$EN_UTF
 RUN groupadd -g ${GID} ${GROUP} \
-	&& adduser --gecos '' -u ${UID} -gid ${GID} --disabled-password ${USER}
+    && adduser --gecos '' -u ${UID} -gid ${GID} --disabled-password ${USER}
 
 USER ${USER}
 WORKDIR /home/${USER}
@@ -33,9 +33,9 @@ ARG MLFLOW_VER="2.13.0"
 ARG GCS_VER="2.16.0"
 ARG BOTO_VER="1.34.112"
 RUN pip3 -qq install \
-	mlflow==${MLFLOW_VER} \
-	google-cloud-storage==${GCS_VER} \
-	boto3==${BOTO_VER}
+    mlflow==${MLFLOW_VER} \
+    google-cloud-storage==${GCS_VER} \
+    boto3==${BOTO_VER}
 ENV PATH="/home/$USER/.local/bin:$PATH"
 
 RUN mkdir scripts/
