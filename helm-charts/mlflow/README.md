@@ -17,7 +17,7 @@ Deploys MLFlow server with authentication in AISG-managed clusters. Backup cronj
 | backup.path                         | string | `"db-backups"`                    | Path to save the mlflow tracking server backups to.                                                    |
 | backup.schedule                     | string | `"30 19 * * 2,4,6"`               | Cron schedule for the backup job. Default: Every Tuesday, Thursday, and Saturday at 7:30pm.            |
 | backup.timeoutSec                   | int    | `60`                              | TTL (in seconds) for the jobs spun up by the cronjob schedule.                                         |
-| config.artefactBackend              | string | `"ecs"`                           | Define which backend to use to store MLflow artefact, [ecs, gcs].                                      |
+| config.artifactBackend              | string | `"ecs"`                           | Define which backend to use to store MLflow artifact, [ecs, gcs].                                      |
 | config.authSecretName               | string | `"mlflow-admin-credentials"`      | Name of secret containing basic auth admin credentials.                                                |
 | config.backupJob                    | bool   | `true`                            | Enable/Disable backup jobs for database file.                                                          |
 | config.bucketName                   | string | `"100e-proj"`                     | Name of bucket that the artifacts and tracking server will write to.                                   |

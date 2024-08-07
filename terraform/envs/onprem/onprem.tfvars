@@ -1,6 +1,6 @@
 namespace = ""
 root_url = ""
-artefact_bucket_name = "workspace"
+artifact_bucket_name = "workspace"
 pvc_name = ""
 ecs_access_key = ""
 ecs_secret_key = ""

@@ -54,7 +54,7 @@ spec:
           volumeMounts:
             - name: {{ .Values.persistent.volumeName }}
               mountPath: {{ .Values.persistent.mountPath }}
-            {{- if eq .Values.config.artefactBackend "gcs" }}
+            {{- if eq .Values.config.artifactBackend "gcs" }}
             - name: {{ .Values.gcp.serviceAccount.volumeName }}
               mountPath: {{ .Values.gcp.serviceAccount.mountPath }}
               readOnly: true
@@ -85,8 +85,8 @@ spec:
                   key: password
             {{- end }}
             - name: ARTIFACT_BACKEND
-              value: {{ .Values.config.artefactBackend | upper }}
-            {{- if eq .Values.config.artefactBackend "ecs" }}
+              value: {{ .Values.config.artifactBackend | upper }}
+            {{- if eq .Values.config.artifactBackend "ecs" }}
             - name: ARTIFACT_URL
               value: {{ printf "s3://%s/mlflow/mlflow-tracking-server" .Values.config.bucketName  }}
             - name: MLFLOW_S3_ENDPOINT_URL
@@ -103,23 +103,23 @@ spec:
                   key: {{ .Values.ecs.secretAccessKey }}
                   name: {{ .Values.ecs.s3CredentialsName }}
                   optional: False
-            {{- else if eq .Values.config.artefactBackend "gcs" }}
+            {{- else if eq .Values.config.artifactBackend "gcs" }}
             - name: ARTIFACT_URL
               value: {{ printf "gs://%s/mlflow/mlflow-tracking-server" .Values.config.bucketName  }}
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: {{ .Values.gcp.serviceAccount.mountPath }}/{{ .Values.gcp.serviceAccount.jsonName }}
             {{- end }}
       imagePullSecrets:
-        {{- if eq .Values.config.artefactBackend "ecs" }}
+        {{- if eq .Values.config.artifactBackend "ecs" }}
         - name: {{ .Values.ecs.harborCredentialsName }}
-        {{- else if eq .Values.config.artefactBackend "gcs" }}
+        {{- else if eq .Values.config.artifactBackend "gcs" }}
         - name: {{ .Values.gcp.credentialsName }}
         {{- end }}
       volumes:
         - name: {{ .Values.persistent.volumeName }}
           persistentVolumeClaim:
             claimName: {{ .Values.persistent.volumeClaimName }}
-        {{- if eq .Values.config.artefactBackend "gcs" }}
+        {{- if eq .Values.config.artifactBackend "gcs" }}
         - name: {{ .Values.gcp.serviceAccount.volumeName }}
           secret:
             secretName: {{ .Values.gcp.serviceAccount.secretName }}
