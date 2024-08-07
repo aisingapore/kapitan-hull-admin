@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  # repository: asia-southeast1-docker.pkg.dev/machine-learning-ops/code-server/code-server:v4.89.1-2
-  repository: registry.aisingapore.net/mlops-pub/code-server:v4.89.1-2
+  # repository: asia-southeast1-docker.pkg.dev/machine-learning-ops/pub-images/code-server:stable
+  repository: registry.aisingapore.net/mlops-pub/code-server:stable
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""

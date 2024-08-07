@@ -2,4 +2,4 @@ apiVersion: v2
 name: code-server-aisg
 description: Deploys VSCode server with authentication in AISG-managed clusters.
 type: application
-version: 0.1.0
+version: 0.1.1

@@ -14,8 +14,8 @@ ARG HOME_DIR="/home/${NON_ROOT_USER}"
 ARG CONDA_HOME="/miniconda3"
 
 # version arguments
-ARG CODE_VER="4.89.1"
-ARG CONDA_VER="py312_24.4.0-0"
+ARG CODE_VER="4.91.1"
+ARG CONDA_VER="py312_24.5.0-0"
 
 RUN apt-get -qqq update \
     && apt-get install -y -qqq --no-install-recommends \
@@ -91,4 +91,3 @@ ENV PATH ${CONDA_HOME}/bin:${HOME_DIR}/.local/bin:${PATH}
 EXPOSE 8080
 ENTRYPOINT ["/usr/bin/code-server"]
 CMD ["--disable-telemetry", "--bind-addr=0.0.0.0:8080", "."]
-
