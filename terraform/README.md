@@ -18,6 +18,7 @@ In essence, this terraform module will manage the following resources:
 In order to manage the resources, several preparatory work is necessary prior to
 deployment.
 
+- (For GCS only) Enabled Filestore API on Goocle Clould Console
 - `terraform`, `kubectl` and `helm` CLI tools installed on your local machine
 - The target cluster's `kubeconfig` file, this will require permissions to 
 create/delete Kubernetes resources.
