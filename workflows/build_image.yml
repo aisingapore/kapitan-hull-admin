@@ -1,9 +1,9 @@
 variables:
-  DIND_IMAGE: docker:24.0.6-dind-alpine3.18
-  KANIKO_IMAGE: gcr.io/kaniko-project/executor:v1.15.0-debug
+  DIND_IMAGE: docker:27.1.2-dind-alpine3.20
+  KANIKO_IMAGE: gcr.io/kaniko-project/executor:v1.23.2-debug
   MLFLOW_REPO_PATH: mlflow
   GCP_LOCATION: asia-southeast1-docker.pkg.dev
-  GCP_REPO: machine-learning-ops/mlflow-server/v2/mlflow
+  GCP_REPO: machine-learning-ops/pub-images/mlflow-server
   HARBOR_URI: registry.aisingapore.net
   HARBOR_REPO: mlops-pub/mlflow-server
 

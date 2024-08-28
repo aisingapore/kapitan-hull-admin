@@ -14,8 +14,8 @@ ARG HOME_DIR="/home/${NON_ROOT_USER}"
 ARG CONDA_HOME="/miniconda3"
 
 # version arguments
-ARG CODE_VER="4.91.1"
-ARG CONDA_VER="py312_24.5.0-0"
+ARG CODE_VER="4.92.2"
+ARG CONDA_VER="py312_24.7.1-0"
 
 RUN apt-get -qqq update \
     && apt-get install -y -qqq --no-install-recommends \

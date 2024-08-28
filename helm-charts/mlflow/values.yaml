@@ -94,7 +94,8 @@ backup:
   containerName: backup-job
   gcs:
     # -- Image to run the backup job on, for when the tracking server is stored on GCS.
-    image: google/cloud-sdk:487.0.0-slim
+    #image: google/cloud-sdk:490.0.0-slim
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli:490.0.0-slim
     # -- Arguments for the backup job image for a GCS backend.
     args:
     - gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS;
@@ -102,7 +103,7 @@ backup:
       gsutil cp $MLFLOW_DATABASE_PATH gs://$GCS_BUCKET/$MLFLOW_BACKUP_PATH/$(TZ='Asia/Singapore' date +"%d%m%y_%H%M%S")_mlflow.db
   ecs:
     # -- Image to run the backup job on, for when the tracking server is stored on ECS.
-    image: amazon/aws-cli:2.17.24
+    image: amazon/aws-cli:2.17.39
     # -- Arguments for the backup job image for a ECS backend.
     args:
     - aws s3 cp $MLFLOW_DATABASE_PATH s3://$S3_BUCKET/$MLFLOW_BACKUP_PATH/$(TZ='Asia/Singapore' date +"%d%m%y_%H%M%S")_mlflow.db

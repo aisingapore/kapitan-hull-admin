@@ -12,7 +12,7 @@ terraform {
 locals {
   namespace             = "runai-proj"
   common_pvc_name       = "proj-pvc"
-  codeserver_image_repo = "asia-southeast1-docker.pkg.dev/machine-learning-ops/pub-images/code-server:v4.91.1"
+  codeserver_image_repo = "asia-southeast1-docker.pkg.dev/machine-learning-ops/pub-images/code-server:stable"
   common_pvc_path       = "/proj-pvc"
   # Uncomment the node_selector block in main.spec.template.spec if it is to be used
   # node_selector_key     = ""

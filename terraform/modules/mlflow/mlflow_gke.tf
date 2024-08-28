@@ -27,7 +27,7 @@ resource "random_password" "mlflow_password" {
 
 
 resource "helm_release" "mlflow-server" {
-  chart     = "../../../helm-charts/mlflow"
+  chart     = "oci://registry.aisingapore.net/mlops-pub/mlflow-aisg"
   name      = "mlflow-server"
   namespace = var.namespace
 

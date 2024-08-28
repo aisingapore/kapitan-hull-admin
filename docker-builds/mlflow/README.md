@@ -11,14 +11,12 @@ easier customisation of authentication credentials.
 To build the image, run:
 
 ```bash
-$ docker build \
-    -t mlflow-server \
-    --build-arg MLFLOW_VER=2.15.1 .
+$ docker build -t mlflow-server .
 ```
 
-> Note that the `MLFLOW_VER` argument must be specified for a 
-> successful build invocation. Also, to have authentication available, 
-> mlflow >= 2.5.0.
+> For MLFlow to have authentication, the version has to be at least 
+> 2.5.0. Determine the versions for MLFlow, Python, GCS wrapper and 
+> Boto3 within the Dockerfile.
 
 To run the mlflow server locally on port 5005:
 
