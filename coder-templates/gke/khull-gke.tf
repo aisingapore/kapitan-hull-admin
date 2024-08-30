@@ -133,6 +133,11 @@ resource "coder_agent" "main" {
       /miniconda3/bin/conda config --set env_prompt '({name})'
     fi
     
+    if [[ ! -f /home/coder/.gitconfig ]]; then
+      echo "Unable to find git configuration in home directory, initialising gitconfig file..."
+      git config --global init.defaultBranch main
+    fi
+
     /usr/bin/code-server --disable-telemetry --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
   EOT
