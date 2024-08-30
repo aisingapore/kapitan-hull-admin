@@ -92,7 +92,7 @@ resource "helm_release" "coder-server" {
   namespace  = var.namespace
 
   values = [
-    "${file("../../modules/coder/values.yaml")}"
+    file("${path.module}/values.yaml")
   ]
 
   set {

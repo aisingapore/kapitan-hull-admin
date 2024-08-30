@@ -1,7 +1,6 @@
 namespace = ""
 root_url = ""
-target_env = "gke"
-artifact_bucket_name = ""
+artefact_bucket_name = ""
 gcp_project_id = ""
 pvc_name = ""
 
