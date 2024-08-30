@@ -11,9 +11,9 @@ terraform {
 
 locals {
   namespace             = "runai-proj"
-  common_pvc_name       = "proj-pvc"
+  common_pvc_name       = "pvc-data"
   codeserver_image_repo = "registry.aisingapore.net/mlops-pub/code-server:stable"
-  common_pvc_path       = "/proj-pvc"
+  common_pvc_path       = "/pvc-data"
   # Uncomment the node_selector block in main.spec.template.spec if it is to be used
   #node_selector_key     = ""
   #node_selector_value   = ""
@@ -132,7 +132,7 @@ resource "coder_agent" "main" {
       /miniconda3/bin/conda config --append envs_dirs ${local.common_pvc_path}/.conda/envs/
       /miniconda3/bin/conda config --set env_prompt '({name})'
     fi
-    
+
     if [[ ! -f /home/coder/config.json ]]; then
       echo "Unable to find image repository credentials in home directory, writing credential file (read-only).."
       echo -n $HARBOR_CREDENTIALS >> /home/coder/config.json

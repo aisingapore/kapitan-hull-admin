@@ -15,8 +15,8 @@ locals {
   codeserver_image_repo = "asia-southeast1-docker.pkg.dev/machine-learning-ops/pub-images/code-server:stable"
   common_pvc_path       = "/pvc-data"
   # Uncomment the node_selector block in main.spec.template.spec if it is to be used
-  # node_selector_key     = ""
-  # node_selector_value   = ""
+  #node_selector_key     = ""
+  #node_selector_value   = ""
 }
 
 provider "coder" {
