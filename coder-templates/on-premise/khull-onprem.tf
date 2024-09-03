@@ -11,12 +11,12 @@ terraform {
 
 locals {
   namespace             = "runai-proj"
-  common_pvc_name       = "proj-pvc"
-  codeserver_image_repo = "registry.aisingapore.net/mlops-pub/code-server:v4.89.1-2"
-  common_pvc_path       = "/proj-pvc"
+  common_pvc_name       = "pvc-data"
+  codeserver_image_repo = "registry.aisingapore.net/mlops-pub/code-server:stable"
+  common_pvc_path       = "/pvc-data"
   # Uncomment the node_selector block in main.spec.template.spec if it is to be used
-  node_selector_key     = ""
-  node_selector_value   = ""
+  #node_selector_key     = ""
+  #node_selector_value   = ""
 }
 
 provider "coder" {
@@ -95,7 +95,7 @@ resource "coder_agent" "main" {
   arch           = "amd64"
   startup_script =<<-EOT
     #!/bin/bash
-    set -e    
+    set -e
 
     if [[ ! -f /home/coder/.bashrc ]]; then
       echo "Unable to find user profile in home directory, initialising home directory..."
@@ -133,6 +133,11 @@ resource "coder_agent" "main" {
       /miniconda3/bin/conda config --set env_prompt '({name})'
     fi
     
+    if [[ ! -f /home/coder/.gitconfig ]]; then
+      echo "Unable to find git configuration in home directory, initialising gitconfig file..."
+      git config --global init.defaultBranch main
+    fi
+
     if [[ ! -f /home/coder/config.json ]]; then
       echo "Unable to find image repository credentials in home directory, writing credential file (read-only).."
       echo -n $HARBOR_CREDENTIALS >> /home/coder/config.json
@@ -310,7 +315,7 @@ resource "kubernetes_deployment" "main" {
         #}
         init_container {
           name    = "runai-init"
-          image   = "busybox:1.27"
+          image   = "busybox:1.36"
           command = ["/bin/sh", "-c", "cp /secrets/runai-sso.yaml /etc/runai/runai-sso.yaml && chmod 0766 /etc/runai/runai-sso.yaml"]
           volume_mount {
             mount_path = "/secrets"
@@ -445,4 +450,3 @@ resource "kubernetes_deployment" "main" {
     }
   }
 }
-

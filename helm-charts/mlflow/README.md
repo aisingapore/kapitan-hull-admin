@@ -1,6 +1,6 @@
 # mlflow-aisg
 
-![Version: 2.1.1](https://img.shields.io/badge/Version-2.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 2.2.0](https://img.shields.io/badge/Version-2.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 Deploys MLFlow server with authentication in AISG-managed clusters. Backup cronjobs are also included in the charts.
 
@@ -11,13 +11,13 @@ Deploys MLFlow server with authentication in AISG-managed clusters. Backup cronj
 | backup.containerName                | string | `"backup-job"`                    | Name of the container of the backup job.                                                               |
 | backup.cronjobName                  | string | `"mlflow-sqlitedb-backup"`        | Name of the backup cronjob.                                                                            |
 | backup.ecs.args                     | list   | `["aws s3 cp $MLFLOW_DATABASE_PATH s3://$S3_BUCKET/$MLFLOW_BACKUP_PATH/$(TZ='Asia/Singapore' date +\"%d%m%y_%H%M%S\")_mlflow.db"]` | Arguments for the backup job image for a ECS backend. |
-| backup.ecs.image                    | string | `"amazon/aws-cli:2.13.3"`         | Image to run the backup job on, for when the tracking server is stored on ECS.                         |
+| backup.ecs.image                    | string | `"amazon/aws-cli:2.17.24"`        | Image to run the backup job on, for when the tracking server is stored on ECS.                         |
 | backup.gcs.args                     | list   | `["gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS; gsutil ls -b gs://$GCS_BUCKET/$MLFLOW_BACKUP_PATH; gsutil cp $MLFLOW_DATABASE_PATH gs://$GCS_BUCKET/$MLFLOW_BACKUP_PATH/$(TZ='Asia/Singapore' date +\"%d%m%y_%H%M%S\")_mlflow.db"]` | Arguments for the backup job image for a GCS backend. |
-| backup.gcs.image                    | string | `"google/cloud-sdk:437.0.1-slim"` | Image to run the backup job on, for when the tracking server is stored on GCS.                         |
+| backup.gcs.image                    | string | `"google/cloud-sdk:487.0.0-slim"` | Image to run the backup job on, for when the tracking server is stored on GCS.                         |
 | backup.path                         | string | `"db-backups"`                    | Path to save the mlflow tracking server backups to.                                                    |
 | backup.schedule                     | string | `"30 19 * * 2,4,6"`               | Cron schedule for the backup job. Default: Every Tuesday, Thursday, and Saturday at 7:30pm.            |
 | backup.timeoutSec                   | int    | `60`                              | TTL (in seconds) for the jobs spun up by the cronjob schedule.                                         |
-| config.artefactBackend              | string | `"ecs"`                           | Define which backend to use to store MLflow artefact, [ecs, gcs].                                      |
+| config.artifactBackend              | string | `"ecs"`                           | Define which backend to use to store MLflow artifact, [ecs, gcs].                                      |
 | config.authSecretName               | string | `"mlflow-admin-credentials"`      | Name of secret containing basic auth admin credentials.                                                |
 | config.backupJob                    | bool   | `true`                            | Enable/Disable backup jobs for database file.                                                          |
 | config.bucketName                   | string | `"100e-proj"`                     | Name of bucket that the artifacts and tracking server will write to.                                   |

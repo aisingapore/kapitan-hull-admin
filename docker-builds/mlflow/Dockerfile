@@ -1,8 +1,8 @@
-FROM python:3.12-slim-bookworm
+FROM python:3.12.5-slim-bookworm
 
-LABEL version='2.13.0-python-3.12-gcs-2.16.0-boto-1.34.112'
+LABEL version='2.15.1-python-3.12.5-gcs-2.18.2-boto-1.35.7'
 LABEL decription='MLflow Server with basic auth and aws/gcp artefact storage'
-LABEL author='Deon Chia'
+LABEL author='AISG'
 
 ARG USER=nonroot
 ARG UID=1005
@@ -29,9 +29,9 @@ RUN groupadd -g ${GID} ${GROUP} \
 USER ${USER}
 WORKDIR /home/${USER}
 
-ARG MLFLOW_VER="2.13.0"
-ARG GCS_VER="2.16.0"
-ARG BOTO_VER="1.34.112"
+ARG MLFLOW_VER="2.15.1"
+ARG GCS_VER="2.18.2"
+ARG BOTO_VER="1.35.7"
 RUN pip3 -qq install \
     mlflow==${MLFLOW_VER} \
     google-cloud-storage==${GCS_VER} \
@@ -44,4 +44,3 @@ COPY --chown=${USER}:${USER} --chmod=0744 entrypoint.sh scripts/
 ENTRYPOINT [ "./scripts/entrypoint.sh" ]
 CMD [ "--port 5005" ]
 EXPOSE 5005
-

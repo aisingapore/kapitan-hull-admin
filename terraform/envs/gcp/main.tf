@@ -55,9 +55,9 @@ resource "kubernetes_persistent_volume_claim" "pvc-data-gke" {
 }
 
 module "mlflow-server" {
-  source               = "../../modules/mlflow/"
+  source               = "github.com/aisingapore/kapitan-hull-admin//terraform/modules/mlflow"
   backend_storage      = "gcs"
-  artefact_bucket_name = var.artefact_bucket_name
+  artifact_bucket_name = var.artifact_bucket_name
   namespace            = var.namespace
   pvc_name             = var.pvc_name
   custom_image         = local.gar_mlflow_repo
@@ -69,7 +69,7 @@ module "mlflow-server" {
 }
 
 module "coder-server" {
-  source               = "../../modules/coder/"
+  source               = "github.com/aisingapore/kapitan-hull-admin//terraform/modules/coder"
   kubeconfig           = var.kubeconfig
   namespace            = var.namespace
   coder_url            = format("coder.%s", var.root_url)

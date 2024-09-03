@@ -26,7 +26,7 @@ create/delete Kubernetes resources.
 to login and interact with the runAI backend.
 - Google Service Account (SA) credential file to access Google Cloud Storage (GCS)
 - `nginx-ingress` and `runAI` has been installed on the cluster
-- (Optional) Login credentials for Image registry, Google Artefact Registry 
+- (Optional) Login credentials for Image registry, Google Artifact Registry 
 or AISG's Harbor. This is available for unique deployment circumstances; else, 
 the default images resides in publically availabe image repositories.
 - (Onprem - OCP) Ensure that the following hostnames are whitelisted:
@@ -115,7 +115,7 @@ And the resulting files, when initialised, would be written to `gcs://100e-terra
 | --- | --- |
 | `namespace` | Kubernetes namespace where modules and resources are deployed in |
 | `root_url` | Root URL to access `coder` and the `MLflow` server, e.g. 100e-a_project.aisingapore.net |
-| `artefact_bucket_name` | Bucket name where MLflow will store model artefacts to |
+| `artifact_bucket_name` | Bucket name where MLflow will store model artifacts to |
 | `pvc_name` | Name of the 1Ti RWX Persistent Volume Claim that will be created and referenced to |
 | `coder_auth` | Authentication method for `coder`, accepts either `password` or `oidc` |
 
