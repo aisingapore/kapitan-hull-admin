@@ -22,6 +22,7 @@ RUN apt-get -qqq update \
     git \
     nano \
     vim \
+    less \
     curl \
     wget \
     mtr-tiny \
