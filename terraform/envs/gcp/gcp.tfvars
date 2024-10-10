@@ -1,6 +1,6 @@
 namespace = ""
 root_url = ""
-artefact_bucket_name = ""
+artifact_bucket_name = ""
 gcp_project_id = ""
 pvc_name = ""
 

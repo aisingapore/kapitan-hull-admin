@@ -1,7 +1,7 @@
 FROM python:3.12.5-slim-bookworm
 
 LABEL version='2.15.1-python-3.12.5-gcs-2.18.2-boto-1.35.7'
-LABEL decription='MLflow Server with basic auth and aws/gcp artefact storage'
+LABEL decription='MLflow Server with basic auth and aws/gcp artifact storage'
 LABEL author='AISG'
 
 ARG USER=nonroot
