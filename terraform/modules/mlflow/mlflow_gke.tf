@@ -27,7 +27,7 @@ resource "random_password" "mlflow_password" {
 
 
 resource "helm_release" "mlflow-server" {
-  chart     = "oci://asia.southeast1-docker.pkg.dev/machine-learning-ops/pub-charts/mlflow-aisg"
+  chart     = "https://github.com/aisingapore/kapitan-hull-admin/releases/latest/download/mlflow-aisg-2.2.0.tgz"
   name      = "mlflow-server"
   namespace = var.namespace
 
