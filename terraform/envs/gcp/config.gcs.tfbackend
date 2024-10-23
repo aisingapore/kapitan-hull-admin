@@ -1,2 +1,2 @@
-bucket = "100e-terraform-backend"
+bucket = "100e-terraform"
 prefix = "project_name/terraform/state"
