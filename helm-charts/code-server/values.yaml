@@ -13,6 +13,7 @@ image:
   args:
     - "--disable-telemetry"
     - "--auth=password"
+    - "--disable-file-downloads"
 
 runaiKubeconfig:
   dir: .runai_config
