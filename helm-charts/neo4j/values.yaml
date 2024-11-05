@@ -352,7 +352,7 @@ securityContext:
   runAsUser: 7474
   runAsGroup: 7474
   fsGroup: 7474
-  fsGroupChangePolicy: "Always"
+  fsGroupChangePolicy: "OnRootMismatch"
 
 # securityContext defines privilege and access control settings for a Container. Making sure that we dont run Neo4j as root user.
 containerSecurityContext:
