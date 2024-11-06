@@ -1,2 +1,0 @@
-bucket = "100e-terraform"
-prefix = "mock/terraform/state"

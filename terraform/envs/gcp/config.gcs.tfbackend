@@ -1,2 +1,2 @@
 bucket = "100e-terraform"
-prefix = "project_name/terraform/state"
+prefix = "gcp/sip-hutchinson-aut0/terraform/state"
