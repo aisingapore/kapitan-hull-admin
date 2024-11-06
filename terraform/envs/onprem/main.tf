@@ -3,7 +3,8 @@ terraform {
 }
 
 locals {
-  gar_mlflow_repo = "asia-southeast1-docker.pkg.dev/machine-learning-ops/pub-images/mlflow-server:stable"
+  harbor_mlflow_repo = "registry.aisingapore.net/mlops-pub/mlflow-server:stable"
+  ecs_endpoint       = "https://necs.nus.edu.sg"
 }
 
 provider "kubernetes" {
@@ -22,27 +23,28 @@ resource "kubernetes_secret" "runai-sso" {
   }
 }
 
-# GKE Secrets - gcp-sa-credentials 
-resource "kubernetes_secret" "gcp-credentials" {
+# RKE Secrets - s3-credentials
+resource "kubernetes_secret" "s3-credentials" {
   metadata {
-    name      = "gcp-sa-credentials"
+    name      = "s3-credentials"
     namespace = var.namespace
   }
 
   data = {
-    "gcp-service-account.json" = file(var.gcs_credentials)
+    accessKeyId      = var.ecs_access_key
+    secretAccessKey  = var.ecs_secret_key
+    ecsS3EndpointURL = local.ecs_endpoint
   }
 }
-
+  
 # create RWX PVC
-resource "kubernetes_persistent_volume_claim" "pvc-data-gke" {
+resource "kubernetes_persistent_volume_claim" "pvc-data-onprem" {
   metadata {
     name      = var.pvc_name
     namespace = var.namespace
   }
   spec {
-    storage_class_name = "fs-std-rwx"
-    access_modes       = ["ReadWriteMany"]
+    access_modes = ["ReadWriteMany"]
     resources {
       requests = {
         storage = "1Ti"
@@ -56,23 +58,25 @@ resource "kubernetes_persistent_volume_claim" "pvc-data-gke" {
 
 module "mlflow-server" {
   source               = "github.com/aisingapore/kapitan-hull-admin//terraform/modules/mlflow"
-  backend_storage      = "gcs"
+  backend_storage      = "ecs"
   artifact_bucket_name = var.artifact_bucket_name
   namespace            = var.namespace
   pvc_name             = var.pvc_name
-  custom_image         = local.gar_mlflow_repo
-  gcp_project_id       = var.gcp_project_id
+  custom_image         = local.harbor_mlflow_repo
   kubeconfig           = var.kubeconfig
-  ingress_hostname     = format("mlflow.%s", var.root_url)
+  ingress_hostname     = format("mlflow-%s", var.root_url)
+  gcp_project_id       = null
   node_selector_key    = var.node_selector_key
   node_selector_value  = var.node_selector_value
 }
 
+# Change coder_image if there are firewall complications
 module "coder-server" {
   source               = "github.com/aisingapore/kapitan-hull-admin//terraform/modules/coder"
   kubeconfig           = var.kubeconfig
   namespace            = var.namespace
-  coder_url            = format("coder.%s", var.root_url)
+  #coder_image          = "registry.aisingapore.net/mlops-pub/coder"
+  coder_url            = format("coder-%s", var.root_url)
   node_selector_key    = var.node_selector_key
   node_selector_value  = var.node_selector_value
   auth_method          = var.coder_auth

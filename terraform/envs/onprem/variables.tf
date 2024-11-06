@@ -13,12 +13,6 @@ variable "artifact_bucket_name" {
   description = "Bucket name where artifacts will be stored"
 }
 
-variable "gcp_project_id" {
-  type        = string
-  default     = null
-  description = "GCP Project ID, if Khull is to be deployed on GKE"
-}
-
 variable "kubeconfig" {
   type        = string
   description = "Location of the kubeconfig of the target Kubernetes cluster"
@@ -29,14 +23,21 @@ variable "pvc_name" {
   description = "Name of the RWX Persistent Storage Claim to be created"
 }
 
-variable "gcs_credentials" {
-  type        = string
-  description = "Path of the GKE service account key"
-}
-
 variable "runai_kubeconfig" {
   type        = string
   description = "Path to the non-initialised kubeconfig for the runai cluster"
+}
+
+variable "ecs_access_key" {
+  type        = string
+  description = "Access Key ID for ECS"
+  default     = ""
+}
+
+variable "ecs_secret_key" {
+  type        = string
+  description = "Secret Key for ECS"
+  default     = ""
 }
 
 variable "node_selector_key" {
@@ -54,7 +55,6 @@ variable "node_selector_value" {
 variable "coder_auth" {
   type        = string
   description = "Authentication methods for Coder server, either 'oidc' or 'password'"
-  
   validation {
     condition     = contains(["oidc", "password"], var.coder_auth)
     error_message = "Invalid authentication method provided."
