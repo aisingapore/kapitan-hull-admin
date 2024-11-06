@@ -1,8 +1,3 @@
-variable "kubeconfig" {
-  type        = string
-  description = "Location of the cluster's kubeconfig file"
-}
-
 variable "namespace" {
   type        = string
   description = "Deployment namespace"
