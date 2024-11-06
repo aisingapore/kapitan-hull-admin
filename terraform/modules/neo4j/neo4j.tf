@@ -1,3 +1,13 @@
+provider "helm" {
+	kubernetes {
+		config_path = pathexpand(var.kubeconfig)
+	}
+}
+
+provider "kubernetes" {
+	config_path = pathexpand(var.kubeconfig)
+}
+
 resource "random_password" "neo4j_password" {
   length  = 12
   special = false
