@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "langfuse-ingress"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 8g
+spec:
+  ingressClassName: "nginx"
+  tls:
+    - secretName: langfuse-ssl
+      hosts:
+        - "langfuse.lqoasis-aut0.aisingapore.net"
+  rules:
+  - host: "langfuse.lqoasis-aut0.aisingapore.net"
+    http:
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: "langfuse-svc"
+              port:
+                number: 3003
