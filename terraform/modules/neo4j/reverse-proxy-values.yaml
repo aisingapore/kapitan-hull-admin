@@ -21,5 +21,4 @@ reverseProxy:
       enabled: true
       config:
       - secretName: "neo4j-ssl"
-        hosts:
-          - neo4j.sip-hutchinson-aut0.aisingapore.net # change accordingly to project
+        hosts: []
