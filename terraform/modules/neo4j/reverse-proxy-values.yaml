@@ -14,7 +14,7 @@ reverseProxy:
   ingress:
     enabled: true
     annotations: 
-      # following annotations are for gke implementation
+      # following annotations are for gke implementation, change accordingly for on-prem
       cert-manager.io/issuer: "letsencrypt-prod" 
     host: ""
     tls:
