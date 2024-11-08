@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: langfuse-app
+  labels:
+    version: "1" 
+    component: server
+    part-of: langfuse
 spec:
   selector:
     matchLabels:
@@ -17,7 +21,33 @@ spec:
         fsGroup: 2222
       containers:
       - name: langfuse-app
-        image: ghcr.io/langfuse/langfuse
+        image: ghcr.io/langfuse/langfuse:2
+        ports:
+          - containerPort: 3000
+            protocol: TCP
+          livenessProbe:
+          httpGet:
+            path: /api/public/health
+            port: 3000
+          initialDelaySeconds: 30 
+          periodSeconds: 10 
+          timeoutSeconds: 5 
+          failureThreshold: 3 
+        readinessProbe:
+          httpGet:
+            path: /api/public/ready
+            port: 3000
+          initialDelaySeconds: 30 
+          periodSeconds: 10 
+          timeoutSeconds: 5 
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: 1 
+          limits:
+            memory: "2Gi"
+            cpu: 1
         env: 
           - name: "DATABASE_USERNAME"
             value: "langfuse"
@@ -55,15 +85,3 @@ spec:
             value: "false"
           - name: LANGFUSE_LOG_LEVEL
             value: "debug"
-        ports:
-          - containerPort: 3000
-            protocol: TCP
-        livenessProbe:
-          httpGet:
-            path: /api/public/health
-            port: 3000
-        readinessProbe:
-          httpGet:
-            path: /api/public/ready
-            port: 3000
-
