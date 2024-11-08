@@ -1,0 +1,65 @@
+neo4j:
+  # Existing secret to use for initial database password (DO NOT CHANGE)
+  passwordFromSecret: "neo4j-auth"
+  # Neo4j Edition to use (community|enterprise)
+  edition: "community"
+
+volumes:
+  data:
+    mode: "defaultStorageClass"
+
+securityContext:
+  fsGroupChangePolicy: "OnRootMismatch"
+
+services:
+  neo4j:
+    enabled: true
+    spec:
+      type: NodePort
+
+# top level setting called ssl to match the "ssl" from "dbms.ssl.policy"
+ssl:
+  # setting per "connector" matching neo4j config
+  bolt:
+    privateKey:
+      secretName: neo4j-ssl  # we set up the template to grab `private.key` from this secret
+      subPath:  tls.key # we specify the privateKey value name to get from the secret
+    publicCertificate:
+      secretName: neo4j-ssl # we set up the template to grab `public.crt` from this secret
+      subPath: tls.crt # we specify the publicCertificate value name to get from the secret
+    trustedCerts:
+      sources:
+      - secret:
+          name: neo4j-ssl
+          items:
+          - key: tls.crt
+            path: tls.crt # a sources array for a projected volume - this allows someone to (relatively) easily mount multiple public certs from multiple secrets for example.
+    revokedCerts:
+      sources: [ ]  # a sources array for a projected volume
+  https:
+    privateKey:
+      secretName: neo4j-ssl
+      subPath: tls.key
+    publicCertificate:
+      secretName: neo4j-ssl
+      subPath: tls.crt
+    trustedCerts:
+      sources:
+      - secret:
+          name: neo4j-ssl
+          items:
+          - key: tls.crt
+            path: tls.crt
+    revokedCerts:
+      sources: [ ]
+  cluster:
+    privateKey:
+      secretName:
+      subPath:
+    publicCertificate:
+      secretName:
+      subPath:
+    trustedCerts:
+      sources: [ ]
+    revokedCerts:
+      sources: [ ]
