@@ -81,3 +81,13 @@ module "coder-server" {
   oidc_client_id       = var.coder_auth == "oidc" ? var.oidc_client_id : null
   oidc_client_secret   = var.coder_auth == "oidc" ? var.oidc_client_secret : null
 }
+
+module "neo4j" {
+  source               = "github.com/aisingapore/kapitan-hull-admin//terraform/modules/neo4j"
+  count                = var.enable_neo4j ? 1 : 0
+  namespace            = var.namespace
+  neo4j_url            = format("neo4j.%s", var.root_url)
+  neo4j_hosts          = [format("neo4j.%s", var.root_url)]
+  node_selector_key    = var.node_selector_key
+  node_selector_value  = var.node_selector_value
+}
