@@ -9,9 +9,9 @@ spec:
   tls:
     - secretName: langfuse-ssl
       hosts:
-        - "langfuse.lqoasis-aut0.aisingapore.net"
+        - ""
   rules:
-  - host: "langfuse.lqoasis-aut0.aisingapore.net"
+  - host: ""
     http:
       paths:
         - path: /
@@ -21,3 +21,18 @@ spec:
               name: "langfuse-svc"
               port:
                 number: 3003
+---
+  apiVersion: cert-manager.io/v1
+  kind: Issuer
+  metadata:
+    name: letsencrypt-production
+  spec:
+    acme:
+      server: https://acme-v02.api.letsencrypt.org/directory
+      email: myemail 
+      privateKeySecretRef:
+        name: letsencrypt-production
+      solvers:
+      - http01:
+          ingress:
+            name: langfuse-ingress
