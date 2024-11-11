@@ -5,7 +5,7 @@ deployment:
   appName: "langfuse"
   labels:
     # -- Version of Langfuse server.
-    version: "1" 
+    version: "1"
     # -- Component of Langfuse's deployment.
     component: "server"
     # -- Name of Langfuse's deployment.
@@ -15,12 +15,12 @@ deployment:
       # -- Memory allocation request for Langfuse pod.
       memory: "2Gi"
       # -- CPU allocation request for Langfuse pod.
-      cpu: "1"
+      cpu: 1
     limits:
       # -- Memory limit for Langfuse pod.
       memory: "2Gi"
       # -- CPU limit for Langfuse pod.
-      cpu: "1"
+      cpu: 1
   env:
     # -- Username of Postgres db for Langfuse server.
     databaseUserName: myUsername
@@ -54,11 +54,11 @@ deployment:
 
 securitycontext:
   # -- User ID for Langfuse pod.
-  uid: "1005"
+  uid: 1005
   # -- Group ID for Langfuse pod.
-  gid: "2222"
+  gid: 2222
   # -- Filesystem group id for Langfuse pod.
-  fsGroup: "2222"
+  fsGroup: 2222
 
 service:
   # -- Type of service to be created
@@ -66,9 +66,9 @@ service:
   # -- Name of the Service that points to the Langfuse server Pods.
   serviceName: "langfuse-svc"
   # -- Port at which the langfuse-server is exposed on.
-  targetPort: "6666"
+  targetPort: 6666
   # -- Port at which the service is to be exposed on.
-  port: "6688"
+  port: 6688
   protocol: "TCP"
   # -- Reference labels that will be applied to both Deployment and Service to expose the correct Deployment.
   appName: "langfuse-svc"
