@@ -84,7 +84,7 @@ module "coder-server" {
 
 module "neo4j" {
   source               = "github.com/aisingapore/kapitan-hull-admin//terraform/modules/neo4j?ref=neo4j-integration"
-  count                = var.enable_neo4j ? 1 : 0
+  count                = var.neo4j ? 1 : 0
   namespace            = var.namespace
   neo4j_url            = format("neo4j.%s", var.root_url)
   neo4j_hosts          = [format("neo4j.%s", var.root_url)]

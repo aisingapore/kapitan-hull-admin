@@ -85,7 +85,7 @@ variable "oidc_client_secret" {
   default     = ""
 }
 
-variable "enable_neo4j" {
+variable "neo4j" {
   type    = bool
   description = "Flag to enable the creation of the neo4j module"
   default = false

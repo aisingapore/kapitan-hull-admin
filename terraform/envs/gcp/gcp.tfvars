@@ -13,4 +13,4 @@ oidc_email_domain  = "aisingapore.org\\,aiap.sg"
 oidc_client_id     = "OIDC_CLIENT_ID"
 oidc_client_secret = "OIDC_CLIENT_SECRET"
 
-enable_neo4j = false
+neo4j = false
