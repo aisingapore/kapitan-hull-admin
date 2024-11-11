@@ -4,6 +4,7 @@ metadata:
   name: {{ .Values.ingress.ingressName }}
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: 8g
+    cert-manager.io: {{ .Values.ingress.issuerName }}
   labels:
     version: {{ .Values.labels.version | quote }}
     component: ingress 

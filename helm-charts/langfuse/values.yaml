@@ -82,3 +82,5 @@ ingress:
   host: myNextAuthUrl
   # -- Name of base class ingress is built on.
   className: "nginx"
+  # -- Name of TSL/SSL certificates issuer
+  issuerName: "letsencrypt-production"
