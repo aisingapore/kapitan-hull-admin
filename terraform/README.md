@@ -46,14 +46,14 @@ $ cd envs/{target_env}
 $ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/the/credential/file
 ```
 
-3) Initialise the repository with the GCS backend
+4) Initialise the repository with the GCS backend
 
 ```bash
 envs/{target_env} $ terraform init -backend-config='./config.gcs.tfbackend'
 ```
 
-4) Populate the required fields in the `gcp.tfvar` or `onprem.tfvars`
-5) Plan and inspect the infrastructure that is to be deployed
+5) Populate the required fields in the `gcp.tfvar` or `onprem.tfvars`
+6) Plan and inspect the infrastructure that is to be deployed
 > Please include an additional `-var gcs_credentials='LOCAL_PATH_TO_GCS_SA_FILE'`
 if deploying to GKE.
 
@@ -64,7 +64,7 @@ envs/{target_env} $ terraform plan \
 -var runai_kubeconfig='LOCAL_LOCATION_OF_RUNAI_KUBECONFIG_FILE'
 ```
 
-6) Once satisfied, apply the terraform plan to create the resources
+7) Once satisfied, apply the terraform plan to create the resources
 > Please include an additional `-var gcs_credentials='LOCAL_PATH_TO_GCS_SA_FILE'`
 if deploying to GKE.
 
@@ -75,7 +75,7 @@ envs/{target_env} $ terraform apply \
 -var runai_kubeconfig='LOCAL_LOCATION_OF_RUNAI_KUBECONFIG_FILE'
 ```
 
-7) To teardown the created resources, repeat steps 5) and 6) with the 
+8) To teardown the created resources, repeat steps 5) and 6) with the 
 `-destroy` flag
 
 ## GCS Backend
