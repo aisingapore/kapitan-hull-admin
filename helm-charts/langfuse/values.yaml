@@ -1,15 +1,14 @@
+labels:
+  # -- Version of Langfuse server.
+  version: "1"
+  # -- Name of Langfuse's deployment.
+  part-of: "langfuse"
+
 deployment:
   # -- Name of Langfuse image to pull and use.
   imageName: "ghcr.io/langfuse/langfuse"
   # -- Name of Langfuse server.
   appName: "langfuse"
-  labels:
-    # -- Version of Langfuse server.
-    version: "1"
-    # -- Component of Langfuse's deployment.
-    component: "server"
-    # -- Name of Langfuse's deployment.
-    part-of: "langfuse"
   resources:
     requests:
       # -- Memory allocation request for Langfuse pod.
