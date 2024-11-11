@@ -3,9 +3,9 @@ kind: Deployment
 metadata:
   name: {{ .Values.deployment.appName }}
   labels:
-    version: {{ .Values.deployment.labels.version | quote }}
-    component: {{ .Values.deployment.labels.component }}
-    part-of: {{ .Values.deployment.labels.partOf }}
+    version: {{ .Values.labels.version | quote }}
+    component: deployment
+    part-of: {{ .Values.labels.partOf }}
 spec:
   selector:
     matchLabels:
