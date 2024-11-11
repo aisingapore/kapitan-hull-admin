@@ -1,38 +1,23 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: "langfuse-ingress"
+  name: {{ .Values.ingress.ingressName }}
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: 8g
 spec:
-  ingressClassName: "nginx"
+  ingressClassName: {{ .Values.ingress.className }}
   tls:
-    - secretName: langfuse-ssl
+    - secretName: {{ .Values.ingress.secretName }}
       hosts:
-        - ""
+        - {{ .Values.ingress.host }}
   rules:
-  - host: ""
+  - host: {{ .Values.ingress.host }}
     http:
       paths:
         - path: /
           pathType: ImplementationSpecific
           backend:
             service:
-              name: "langfuse-svc"
+              name: {{ .Values.service.serviceName }}
               port:
-                number: 3003
----
-  apiVersion: cert-manager.io/v1
-  kind: Issuer
-  metadata:
-    name: letsencrypt-production
-  spec:
-    acme:
-      server: https://acme-v02.api.letsencrypt.org/directory
-      email: myemail 
-      privateKeySecretRef:
-        name: letsencrypt-production
-      solvers:
-      - http01:
-          ingress:
-            name: langfuse-ingress
+                number: {{ .Values.service.port }}

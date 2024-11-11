@@ -1,0 +1,85 @@
+deployment:
+  # -- Name of Langfuse image to pull and use.
+  imageName: "ghcr.io/langfuse/langfuse"
+  # -- Name of Langfuse server.
+  appName: "langfuse"
+  labels:
+    # -- Version of Langfuse server.
+    version: "1" 
+    # -- Component of Langfuse's deployment.
+    component: "server"
+    # -- Name of Langfuse's deployment.
+    part-of: "langfuse"
+  resources:
+    requests:
+      # -- Memory allocation request for Langfuse pod.
+      memory: "2Gi"
+      # -- CPU allocation request for Langfuse pod.
+      cpu: "1"
+    limits:
+      # -- Memory limit for Langfuse pod.
+      memory: "2Gi"
+      # -- CPU limit for Langfuse pod.
+      cpu: "1"
+  env:
+    # -- Username of Postgres db for Langfuse server.
+    databaseUserName: myUsername
+    # -- Password of Postgres db for Langfuse server.
+    databasePassword: myPassword
+    # -- Host of postgres db for Langfuse server.
+    databaseHost: myHost
+    # -- Port of postgres db for Langfuse server.
+    databasePort: myPort
+    # -- Name of postgres db for Langfuse server.
+    databaseName: myDb
+    # -- URL for Auth callback. 
+    nextAuthUrl: myNextAuthUrl
+    # -- Secret value for Auth callback. Generate using `openssl rand -base64 32`.
+    nextAuthSecret: secretKey
+    # -- Salt hashed API keys. Generate using `openssl rand -base64 32`.
+    salt: mySalt 
+    # -- Encryption key meant to encrypt sensitive data. Generate using `openssl rand -hex 32`.
+    encryptionKey: mykey
+    # -- Host name to expose Langfuse service.
+    hostName: "0.0.0.0"
+    # -- Boolean flag to disable account creation.
+    disableUsernamePassword: "true"
+    # -- Client ID for Azure's SSO Oauth.
+    azureAdClientId: myClientId
+    # -- Client Secret key for Azure's SSO Oauth.
+    azureAdClientSecret: myClientSecret
+    # -- Tenant ID for Azure's SSO Oauth.
+    azureAdTenantId: myTenantId
+    
+
+securitycontext:
+  # -- User ID for Langfuse pod.
+  uid: "1005"
+  # -- Group ID for Langfuse pod.
+  gid: "2222"
+  # -- Filesystem group id for Langfuse pod.
+  fsGroup: "2222"
+
+service:
+  # -- Type of service to be created
+  type: "NodePort"
+  # -- Name of the Service that points to the Langfuse server Pods.
+  serviceName: "langfuse-svc"
+  # -- Port at which the langfuse-server is exposed on.
+  targetPort: "6666"
+  # -- Port at which the service is to be exposed on.
+  port: "6688"
+  protocol: "TCP"
+  # -- Reference labels that will be applied to both Deployment and Service to expose the correct Deployment.
+  appName: "langfuse-svc"
+
+
+ingress:
+  # -- Name of Ingress that points to the Langfuse service.
+  ingressName: "langfuse-ingress"
+  # -- Name of secret SSL that points to Langfuse ingress.
+  secretName: "langfuse-ssl"
+  # -- Name of URI at which Langfuse is accessed through https://.
+  host: myNextAuthUrl
+  # -- Name of base class ingress is built on.
+  className: "nginx"
