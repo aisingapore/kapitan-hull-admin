@@ -6,6 +6,7 @@ Hull components onto a Kubernetes cluster in GKE or RKE locally.
 In essence, this terraform module will manage the following resources:
 - `mlflow-server` Helm chart
 - `coder` Helm chart
+- `neo4j` Helm chart (optional deployment)
 - `runai-sso.yaml` Kubernetes Secret 
 - 1Ti RWX Persistent Volume Claim
 - `gcp-credentials` Kubernetes Secret (GKE)
