@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.appName }}
+  labels:
+    version: {{ .Values.labels.version | quote }}
+    component: deployment
+    part-of: {{ .Values.labels.partOf }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.deployment.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deployment.appName }}
+    spec:
+      securityContext:
+        runAsUser: {{ .Values.securitycontext.uid }}
+        runAsGroup: {{ .Values.securitycontext.gid }}
+        fsGroup: {{ .Values.securitycontext.fsGroup }}
+      containers:
+      - name: {{ .Values.deployment.appName }}
+        image: {{ .Values.deployment.imageName }}
+        ports:
+          - containerPort: {{ .Values.service.targetPort }}
+            protocol: {{ .Values.service.protocol }}
+        livenessProbe:
+          httpGet:
+            path: /api/public/health
+            port: {{ .Values.service.targetPort }}
+          initialDelaySeconds: 30 
+          periodSeconds: 10 
+          timeoutSeconds: 5 
+          failureThreshold: 3 
+        readinessProbe:
+          httpGet:
+            path: /api/public/ready
+            port: {{ .Values.service.targetPort }}
+          initialDelaySeconds: 30 
+          periodSeconds: 10 
+          timeoutSeconds: 5 
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: {{ .Values.deployment.resources.requests.memory }}
+            cpu: {{ .Values.deployment.resources.requests.cpu }} 
+          limits:
+            memory: {{ .Values.deployment.resources.limits.memory }}
+            cpu: {{ .Values.deployment.resources.limits.cpu }}      
+        env:
+          - name: DATABASE_USERNAME
+            value: {{ .Values.deployment.env.databaseUserName }}
+          - name: DATABASE_PASSWORD
+            value: {{ .Values.deployment.env.databasePassword }}
+          - name: DATABASE_HOST
+            value: {{ .Values.deployment.env.databaseHost | quote }}
+          - name: DATABASE_PORT
+            value: {{ .Values.deployment.env.databasePort | quote }}
+          - name: DATABASE_NAME
+            value: {{ .Values.deployment.env.databaseName }}
+          - name: NEXTAUTH_URL
+            value: {{ .Values.deployment.env.nextAuthUrl }}
+          - name: NEXTAUTH_SECRET
+            value: {{ .Values.deployment.env.nextAuthSecret }}
+          - name: SALT
+            value: {{ .Values.deployment.env.salt }}
+          - name: ENCRYPTION_KEY
+            value: {{ .Values.deployment.env.encryptionKey }}
+          - name: PORT
+            value: {{ .Values.service.targetPort | quote }}
+          - name: HOSTNAME
+            value: {{ .Values.deployment.env.hostName | quote }}
+          - name: AUTH_DISABLE_USERNAME_PASSWORD
+            value: {{ .Values.deployment.env.disableUsernamePassword | quote }}
+          - name: AUTH_AZURE_AD_CLIENT_ID
+            value: {{ .Values.deployment.env.azureAdClientId }}
+          - name: AUTH_AZURE_AD_CLIENT_SECRET
+            value: {{ .Values.deployment.env.azureAdClientSecret }}
+          - name: AUTH_AZURE_AD_TENANT_ID
+            value: {{ .Values.deployment.env.azureAdTenantId }}
+
+
