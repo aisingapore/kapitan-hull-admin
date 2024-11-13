@@ -12,7 +12,7 @@ disableLookups: false
 
 neo4j:
   # Name of your cluster
-  name: "hutchinson-neo4j"
+  name: "neo4j"
   # If password is not set or empty a random password will be generated during installation.
   # Ignored if `neo4j.passwordFromSecret` is provided
   password: ""
@@ -78,7 +78,7 @@ volumes:
     # REQUIRED: specify a volume mode to use for data
     # Valid values are share|selector|defaultStorageClass|volume|volumeClaimTemplate|dynamic
     # To get up-and-running quickly, for development or testing, use "defaultStorageClass" for a dynamically provisioned volume of the default storage class.
-    mode: "defaultStorageClass"
+    mode: ""
 
     # Only used if mode is set to "selector"
     # Will attach to existing volumes that match the selector
@@ -221,7 +221,7 @@ services:
 
     spec:
       # Type of service.
-      type: NodePort
+      type: LoadBalancer
 
       # in most cloud environments LoadBalancer type will receive an ephemeral public IP address automatically. If you need to specify a static ip here use:
       # loadBalancerIP: ...
@@ -346,6 +346,8 @@ apoc_credentials: {}
 #     secretName: "essecret"
 #     secretMountPath: "/secret/esCred"
 
+
+
 # securityContext defines privilege and access control settings for a Pod. Making sure that we dont run Neo4j as root user.
 securityContext:
   runAsNonRoot: true
@@ -391,34 +393,24 @@ ssl:
   # setting per "connector" matching neo4j config
   bolt:
     privateKey:
-      secretName: neo4j-ssl  # we set up the template to grab `private.key` from this secret
-      subPath:  tls.key # we specify the privateKey value name to get from the secret
+      secretName:  # we set up the template to grab `private.key` from this secret
+      subPath:  # we specify the privateKey value name to get from the secret
     publicCertificate:
-      secretName: neo4j-ssl # we set up the template to grab `public.crt` from this secret
-      subPath: tls.crt # we specify the publicCertificate value name to get from the secret
+      secretName:  # we set up the template to grab `public.crt` from this secret
+      subPath:  # we specify the publicCertificate value name to get from the secret
     trustedCerts:
-      sources:
-      - secret:
-          name: neo4j-ssl
-          items:
-          - key: tls.crt
-            path: tls.crt # a sources array for a projected volume - this allows someone to (relatively) easily mount multiple public certs from multiple secrets for example.
+      sources: [ ] # a sources array for a projected volume - this allows someone to (relatively) easily mount multiple public certs from multiple secrets for example.
     revokedCerts:
       sources: [ ]  # a sources array for a projected volume
   https:
     privateKey:
-      secretName: neo4j-ssl
-      subPath: tls.key
+      secretName:
+      subPath:
     publicCertificate:
-      secretName: neo4j-ssl
-      subPath: tls.crt
+      secretName:
+      subPath:
     trustedCerts:
-      sources:
-      - secret:
-          name: neo4j-ssl
-          items:
-          - key: tls.crt
-            path: tls.crt
+      sources: [ ]
     revokedCerts:
       sources: [ ]
   cluster:

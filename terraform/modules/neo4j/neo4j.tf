@@ -10,7 +10,7 @@ resource "kubernetes_secret" "neo4j-auth" {
   }
   
   data = {
-    NEO4J_AUTH = base64encode("random_password.neo4j_password.result")
+    NEO4J_AUTH = "neo4j/${random_password.neo4j_password.result}"
   }
 }
 
@@ -38,6 +38,21 @@ resource "helm_release" "neo4j_reverse_proxy" {
 		file("${path.module}/reverse-proxy-values.yaml")
 	]
 
+  set {
+    name  = "reverseProxy.ingress.host"
+    value = var.neo4j_url
+    type  = "string"
+  }
+
+  dynamic "set" {
+    for_each = var.neo4j_hosts
+    content {
+      name  = "reverseProxy.ingress.tls.config[0].hosts[${index(var.neo4j_hosts, set.value)}]"
+      value = set.value
+      type  = "string"
+    }
+  }
+
   dynamic "set" {
     for_each = var.node_selector_key != "" ? [[var.node_selector_key, var.node_selector_value]] : []
     content {
@@ -46,7 +61,6 @@ resource "helm_release" "neo4j_reverse_proxy" {
       type = "string"
     }
   }
-
   depends_on = [kubernetes_secret.neo4j_ssl]
 }
 
@@ -67,6 +81,5 @@ resource "helm_release" "neo4j" {
       type = "string"
     }
   }
-
   depends_on = [kubernetes_secret.neo4j-auth, kubernetes_secret.neo4j_ssl]
 }

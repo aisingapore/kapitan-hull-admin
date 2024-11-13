@@ -84,3 +84,9 @@ variable "oidc_client_secret" {
   description = "Client Secret for OIDC, required if auth_method is set to 'oidc'"
   default     = ""
 }
+
+variable "neo4j" {
+  type    = bool
+  description = "Flag to enable the creation of the neo4j module"
+  default = false
+}
