@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.ingress.ingressName }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 8g
+    cert-manager.io: {{ .Values.ingress.issuerName }}
+  labels:
+    version: {{ .Values.labels.version | quote }}
+    component: ingress 
+    part-of: {{ .Values.labels.partOf }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  tls:
+    - secretName: {{ .Values.ingress.secretName }}
+      hosts:
+        - {{ .Values.ingress.host }}
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: {{ .Values.service.serviceName }}
+              port:
+                number: {{ .Values.service.port }}
